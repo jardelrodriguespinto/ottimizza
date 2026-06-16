@@ -33,7 +33,7 @@ public class JpaBoardRepositoryImpl implements BoardRepository {
 
     @Override
     public Board save(Board board) {
-        BoardEntity entity = new BoardEntity(board.getId(), board.getName());
+        BoardEntity entity = new BoardEntity(board.id(), board.name());
         repository.save(entity);
         return board;
     }

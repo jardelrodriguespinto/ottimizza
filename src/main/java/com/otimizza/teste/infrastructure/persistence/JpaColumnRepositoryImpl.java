@@ -35,7 +35,7 @@ public class JpaColumnRepositoryImpl implements ColumnRepository {
 
     @Override
     public Column save(Column column) {
-        ColumnEntity entity = new ColumnEntity(column.getId(), column.getName(), column.getPosition(), column.getBoardId());
+        ColumnEntity entity = new ColumnEntity(column.id(), column.name(), column.position(), column.boardId());
         repository.save(entity);
         return column;
     }

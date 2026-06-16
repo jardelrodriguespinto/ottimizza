@@ -36,8 +36,8 @@ public class JpaTaskRepositoryImpl implements TaskRepository {
     @Override
     public Task save(Task task) {
         TaskEntity entity = new TaskEntity(task.id(), task.name(), task.position(), 
-                                           task.createdAt(), null, task.completed(), 
-                                           task.tags() != null ? String.join(",", task.tags()) : "", task.columnId());
+                                           task.createdAt(), task.dueDate(), task.completed(), 
+                                           String.join(",", task.tags()), task.columnId());
         repository.save(entity);
         return task;
     }

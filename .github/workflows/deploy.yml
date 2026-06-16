@@ -1,0 +1,28 @@
+name: Deploy Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Build with Gradle
+        run: ./gradlew build
+      - name: Build and Push Docker Images
+        run: |
+          # Aqui entrariam os passos para autenticar e fazer push para um registry (ex: Docker Hub)
+          docker compose build
+          # docker compose push
+      - name: Deploy
+        run: |
+          # Aqui entrariam os comandos para atualizar o ambiente de produção
+          docker compose down
+          docker compose up -d

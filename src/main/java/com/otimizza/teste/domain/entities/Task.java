@@ -1,9 +1,12 @@
 package com.otimizza.teste.domain.entities;
 
+import lombok.Builder;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@Builder(toBuilder = true)
 public record Task(
         UUID id,
         String name,
@@ -19,14 +22,18 @@ public record Task(
             throw new IllegalArgumentException("Task name cannot be null or blank");
         }
         if (id == null) {
-            throw new IllegalArgumentException("Task id cannot be null");
+            id = UUID.randomUUID();
         }
         if (createdAt == null) {
-            throw new IllegalArgumentException("Task createdAt cannot be null");
+            createdAt = OffsetDateTime.now(java.time.ZoneOffset.UTC);
         }
         if (columnId == null) {
             throw new IllegalArgumentException("Column id cannot be null");
         }
-        tags = tags != null ? List.copyOf(tags) : List.of();
+        if (tags == null) {
+            tags = List.of();
+        } else {
+            tags = List.copyOf(tags);
+        }
     }
 }

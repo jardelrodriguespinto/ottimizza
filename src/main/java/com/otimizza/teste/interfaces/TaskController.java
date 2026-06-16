@@ -3,6 +3,9 @@ package com.otimizza.teste.interfaces;
 import com.otimizza.teste.application.usecases.TaskUseCase;
 import com.otimizza.teste.domain.entities.Task;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +25,13 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> create(@RequestBody CreateTaskRequest request) {
+    public ResponseEntity<Task> create(@Valid @RequestBody CreateTaskRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(taskUseCase.create(request.name(), request.position(), request.columnId()));
     }
 
-    public record CreateTaskRequest(String name, int position, UUID columnId) {}
+    public record CreateTaskRequest(
+            @NotBlank(message = "Name cannot be blank") String name,
+            int position,
+            @NotNull(message = "Column ID cannot be null") UUID columnId) {}
 }

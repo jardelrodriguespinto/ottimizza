@@ -4,6 +4,7 @@ import com.otimizza.teste.domain.entities.Column;
 import com.otimizza.teste.domain.repositories.ColumnRepository;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.UUID;
 public class ColumnUseCase {
     private final ColumnRepository repository;
 
+    @Cacheable(value = "columns", key = "#boardId")
     public List<Column> listByBoard(UUID boardId) {
         return repository.findByBoardId(boardId);
     }

@@ -5,6 +5,7 @@ import com.otimizza.teste.domain.entities.Task;
 import com.otimizza.teste.domain.factories.DomainFactory;
 import com.otimizza.teste.domain.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ public class TaskUseCase {
     private final TaskRepository repository;
     private final ApplicationEventPublisher eventPublisher;
 
+    @Cacheable(value = "tasks", key = "#columnId")
     public List<Task> listByColumn(UUID columnId) {
         return repository.findByColumnId(columnId);
     }

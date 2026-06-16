@@ -30,6 +30,10 @@ public record Task(
         if (columnId == null) {
             throw new IllegalArgumentException("Column id cannot be null");
         }
-        tags = tags != null ? List.copyOf(tags) : List.of();
+        if (tags == null) {
+            tags = List.of();
+        } else {
+            tags = List.copyOf(tags);
+        }
     }
 }

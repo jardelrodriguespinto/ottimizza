@@ -16,7 +16,7 @@ class BoardTest {
         Board board = new Board(id, name);
 
         assertNotNull(board);
-        assertEquals(id, board.getId());
-        assertEquals(name, board.getName());
+        assertEquals(id, board.id());
+        assertEquals(name, board.name());
     }
 }

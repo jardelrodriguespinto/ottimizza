@@ -3,11 +3,11 @@ package com.otimizza.teste.interfaces;
 import com.otimizza.teste.application.usecases.BoardUseCase;
 import com.otimizza.teste.domain.entities.Board;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/board")
@@ -21,7 +21,9 @@ public class BoardController {
     }
 
     @PostMapping
-    public ResponseEntity<Board> create(@RequestParam String name) {
-        return ResponseEntity.ok(boardUseCase.create(name));
+    public ResponseEntity<Board> create(@RequestBody CreateBoardRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(boardUseCase.create(request.name()));
     }
+
+    public record CreateBoardRequest(String name) {}
 }

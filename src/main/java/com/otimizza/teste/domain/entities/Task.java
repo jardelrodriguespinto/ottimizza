@@ -27,6 +27,9 @@ public class Task {
         if (id == null) {
             throw new IllegalArgumentException("Task id cannot be null");
         }
+        if (createdAt == null) {
+            throw new IllegalArgumentException("Task createdAt cannot be null");
+        }
         if (columnId == null) {
             throw new IllegalArgumentException("Column id cannot be null");
         }

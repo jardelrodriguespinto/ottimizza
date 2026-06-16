@@ -3,6 +3,7 @@ package com.otimizza.teste.interfaces;
 import com.otimizza.teste.application.usecases.ColumnUseCase;
 import com.otimizza.teste.domain.entities.Column;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,10 @@ public class ColumnController {
     }
 
     @PostMapping
-    public ResponseEntity<Column> create(@RequestParam String name, @RequestParam int position, @RequestParam UUID boardId) {
-        return ResponseEntity.ok(columnUseCase.create(name, position, boardId));
+    public ResponseEntity<Column> create(@RequestBody CreateColumnRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(columnUseCase.create(request.name(), request.position(), request.boardId()));
     }
+
+    public record CreateColumnRequest(String name, int position, UUID boardId) {}
 }

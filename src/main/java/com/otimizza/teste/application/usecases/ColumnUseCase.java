@@ -4,9 +4,12 @@ import com.otimizza.teste.domain.entities.Column;
 import com.otimizza.teste.domain.repositories.ColumnRepository;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.UUID;
 
+@Service
 @RequiredArgsConstructor
 public class ColumnUseCase {
     private final ColumnRepository repository;

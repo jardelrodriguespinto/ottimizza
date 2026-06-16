@@ -3,6 +3,7 @@ package com.otimizza.teste.interfaces;
 import com.otimizza.teste.application.usecases.TaskUseCase;
 import com.otimizza.teste.domain.entities.Task;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,10 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> create(@RequestParam String name, @RequestParam int position, @RequestParam UUID columnId) {
-        return ResponseEntity.ok(taskUseCase.create(name, position, columnId));
+    public ResponseEntity<Task> create(@RequestBody CreateTaskRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(taskUseCase.create(request.name(), request.position(), request.columnId()));
     }
+
+    public record CreateTaskRequest(String name, int position, UUID columnId) {}
 }

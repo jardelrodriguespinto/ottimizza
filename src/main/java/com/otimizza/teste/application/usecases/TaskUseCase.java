@@ -5,6 +5,7 @@ import com.otimizza.teste.domain.entities.Task;
 import com.otimizza.teste.domain.factories.DomainFactory;
 import com.otimizza.teste.domain.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class TaskUseCase {
         return repository.findByColumnId(columnId);
     }
 
+    @CacheEvict(value = "tasks", key = "#columnId")
     public Task create(String name, int position, UUID columnId) {
         Task task = DomainFactory.createTask(name, position, columnId);
         Task savedTask = repository.save(task);

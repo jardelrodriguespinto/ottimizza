@@ -4,6 +4,7 @@ import com.otimizza.teste.domain.entities.Board;
 import com.otimizza.teste.domain.repositories.BoardRepository;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class BoardUseCase {
         return repository.findAll();
     }
 
+    @CacheEvict(value = "boards", allEntries = true)
     public Board create(String name) {
         Board board = new Board(UUID.randomUUID(), name);
         return repository.save(board);

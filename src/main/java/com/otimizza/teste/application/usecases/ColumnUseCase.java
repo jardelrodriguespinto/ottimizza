@@ -4,6 +4,7 @@ import com.otimizza.teste.domain.entities.Column;
 import com.otimizza.teste.domain.repositories.ColumnRepository;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class ColumnUseCase {
         return repository.findByBoardId(boardId);
     }
 
+    @CacheEvict(value = "columns", key = "#boardId")
     public Column create(String name, int position, UUID boardId) {
         Column column = new Column(UUID.randomUUID(), name, position, boardId);
         return repository.save(column);

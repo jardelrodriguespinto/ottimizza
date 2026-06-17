@@ -1,7 +1,9 @@
 package com.otimizza.teste.application.usecases;
 
+import com.otimizza.teste.domain.entities.Board;
 import com.otimizza.teste.domain.entities.Column;
 import com.otimizza.teste.domain.exceptions.EntityNotFoundException;
+import com.otimizza.teste.domain.repositories.BoardRepository;
 import com.otimizza.teste.domain.repositories.ColumnRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +26,9 @@ class ColumnUseCaseTest {
     @Mock
     private ColumnRepository repository;
 
+    @Mock
+    private BoardRepository boardRepository;
+
     @InjectMocks
     private ColumnUseCase columnUseCase;
 
@@ -45,6 +50,7 @@ class ColumnUseCaseTest {
     @DisplayName("Should create a column")
     void shouldCreateColumn() {
         String boardId = UUID.randomUUID().toString();
+        when(boardRepository.findById(boardId)).thenReturn(Optional.of(new Board(boardId, "Board")));
         when(repository.save(any(Column.class))).thenAnswer(inv -> inv.getArgument(0));
 
         Column created = columnUseCase.create("In Progress", 1, boardId);
@@ -67,9 +73,11 @@ class ColumnUseCaseTest {
     @DisplayName("Should throw EntityNotFoundException when column not found on update")
     void shouldThrowWhenColumnNotFoundOnUpdate() {
         String id = UUID.randomUUID().toString();
+        String boardId = UUID.randomUUID().toString();
+        when(boardRepository.findById(boardId)).thenReturn(Optional.of(new Board(boardId, "Board")));
         when(repository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class,
-                () -> columnUseCase.update(id, "Name", 0, UUID.randomUUID().toString()));
+                () -> columnUseCase.update(id, "Name", 0, boardId));
     }
 }

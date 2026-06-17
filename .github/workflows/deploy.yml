@@ -1,0 +1,51 @@
+name: Deploy Kanban Stack
+
+on:
+  push:
+    branches:
+      - main
+      - homolog
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'homolog' }}
+
+    env:
+      COMPOSE_PROJECT_NAME: ${{ github.ref == 'refs/heads/main' && 'kanban-prod' || 'kanban-homolog' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy and Sync
+        run: |
+          # 1. Configurações de diretório
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+          cd "${{ vars.REMOTE_TARGET }}"
+
+          # 2. Derruba stack atual
+          docker compose -p $COMPOSE_PROJECT_NAME down --remove-orphans || true
+
+          # 3. Sincronização
+          git fetch origin ${{ github.ref_name }}
+          git checkout -f ${{ github.ref_name }}
+          git reset --hard origin/${{ github.ref_name }}
+
+          # 4. Gerar .env
+          echo "⚙️ Gerando arquivo .env..."
+          cat > .env << EOF
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          EOF
+
+          # 5. Build e Up
+          echo "🐳 Iniciando Docker Compose ($COMPOSE_PROJECT_NAME)..."
+          docker compose -p $COMPOSE_PROJECT_NAME build
+          docker compose -p $COMPOSE_PROJECT_NAME up -d --remove-orphans
+
+          echo "🚀 Stack ($COMPOSE_PROJECT_NAME) atualizada com sucesso!"

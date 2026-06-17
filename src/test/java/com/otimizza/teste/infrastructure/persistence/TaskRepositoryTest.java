@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.OffsetDateTime;
@@ -24,8 +26,8 @@ class TaskRepositoryTest {
     private TaskRepository taskRepository;
 
     @Test
-    @DisplayName("Deve salvar e buscar tarefas por columnId ordenadas por posição")
-    void deveSalvarEBuscarTarefasOrdenadas() {
+    @DisplayName("Deve salvar e buscar tarefas por columnId paginadas")
+    void deveSalvarEBuscarTarefasPaginadas() {
         String columnId = UUID.randomUUID().toString();
         Task t2 = new Task(UUID.randomUUID().toString(), "Task 2", 1, OffsetDateTime.now(), null, false, List.of(), columnId);
         Task t1 = new Task(UUID.randomUUID().toString(), "Task 1", 0, OffsetDateTime.now(), null, false, List.of(), columnId);
@@ -33,11 +35,9 @@ class TaskRepositoryTest {
         taskRepository.save(t2);
         taskRepository.save(t1);
 
-        List<Task> tasks = taskRepository.findByColumnId(columnId);
+        Page<Task> tasks = taskRepository.findByColumnId(columnId, PageRequest.of(0, 10));
 
-        assertThat(tasks).hasSize(2);
-        assertThat(tasks.get(0).name()).isEqualTo("Task 1");
-        assertThat(tasks.get(1).name()).isEqualTo("Task 2");
+        assertThat(tasks.getTotalElements()).isEqualTo(2);
     }
 
     @Test

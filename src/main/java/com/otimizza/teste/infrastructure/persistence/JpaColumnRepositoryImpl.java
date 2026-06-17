@@ -3,15 +3,16 @@ package com.otimizza.teste.infrastructure.persistence;
 import com.otimizza.teste.domain.entities.Column;
 import com.otimizza.teste.domain.repositories.ColumnRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 interface SpringDataColumnRepository extends JpaRepository<ColumnEntity, UUID> {
-    List<ColumnEntity> findByBoardIdOrderByPosition(UUID boardId);
+    Page<ColumnEntity> findByBoardId(UUID boardId, Pageable pageable);
 }
 
 @Repository
@@ -20,10 +21,9 @@ public class JpaColumnRepositoryImpl implements ColumnRepository {
     private final SpringDataColumnRepository repository;
 
     @Override
-    public List<Column> findByBoardId(String boardId) {
-        return repository.findByBoardIdOrderByPosition(UUID.fromString(boardId)).stream()
-                .map(this::toDomain)
-                .toList();
+    public Page<Column> findByBoardId(String boardId, Pageable pageable) {
+        return repository.findByBoardId(UUID.fromString(boardId), pageable)
+                .map(this::toDomain);
     }
 
     @Override

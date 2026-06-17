@@ -1,5 +1,6 @@
 package com.otimizza.teste.application.usecases;
 
+import com.otimizza.teste.application.dtos.BoardRequest;
 import com.otimizza.teste.domain.entities.Board;
 import com.otimizza.teste.domain.exceptions.EntityNotFoundException;
 import com.otimizza.teste.domain.repositories.BoardRepository;
@@ -9,6 +10,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,28 +33,31 @@ class BoardUseCaseTest {
     private BoardUseCase boardUseCase;
 
     @Test
-    @DisplayName("Should list all boards")
+    @DisplayName("Should list all boards with pagination")
     void shouldListAllBoards() {
         Board board = new Board(UUID.randomUUID().toString(), "Board 1");
-        when(repository.findAll()).thenReturn(List.of(board));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Board> page = new PageImpl<>(List.of(board), pageable, 1);
+        
+        when(repository.findAll(pageable)).thenReturn(page);
 
-        List<Board> boards = boardUseCase.listAll();
+        Page<Board> result = boardUseCase.listAll(pageable);
 
-        assertFalse(boards.isEmpty());
-        assertEquals(1, boards.size());
-        verify(repository).findAll();
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.getTotalElements());
+        verify(repository).findAll(pageable);
     }
 
     @Test
     @DisplayName("Should create a board")
     void shouldCreateBoard() {
-        String name = "New Board";
+        BoardRequest request = new BoardRequest("New Board");
         when(repository.save(any(Board.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Board created = boardUseCase.create(name);
+        Board created = boardUseCase.create(request);
 
         assertNotNull(created);
-        assertEquals(name, created.name());
+        assertEquals("New Board", created.name());
         verify(repository).save(any(Board.class));
     }
 
@@ -58,10 +66,11 @@ class BoardUseCaseTest {
     void shouldUpdateBoard() {
         String id = UUID.randomUUID().toString();
         Board existing = new Board(id, "Old Name");
+        BoardRequest request = new BoardRequest("New Name");
         when(repository.findById(id)).thenReturn(Optional.of(existing));
         when(repository.save(any(Board.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Board updated = boardUseCase.update(id, "New Name");
+        Board updated = boardUseCase.update(id, request);
 
         assertEquals("New Name", updated.name());
         verify(repository).save(any(Board.class));
@@ -71,9 +80,10 @@ class BoardUseCaseTest {
     @DisplayName("Should throw EntityNotFoundException when board not found on update")
     void shouldThrowWhenBoardNotFoundOnUpdate() {
         String id = UUID.randomUUID().toString();
+        BoardRequest request = new BoardRequest("Name");
         when(repository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> boardUseCase.update(id, "Name"));
+        assertThrows(EntityNotFoundException.class, () -> boardUseCase.update(id, request));
     }
 
     @Test

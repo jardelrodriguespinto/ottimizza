@@ -9,9 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,23 +33,20 @@ class ColumnRepositoryTest {
     @BeforeEach
     void setUp() {
         boardId = UUID.randomUUID().toString();
-        // Nota: Assumindo que BoardRepository.save funciona (testado em BoardRepositoryTest)
     }
 
     @Test
-    @DisplayName("Deve salvar e buscar colunas por boardId ordenadas por posição")
-    void deveSalvarEBuscarColunasOrdenadas() {
+    @DisplayName("Deve salvar e buscar colunas por boardId paginadas")
+    void deveSalvarEBuscarColunasPaginadas() {
         Column col2 = new Column(UUID.randomUUID().toString(), "Fazendo", 1, boardId);
         Column col1 = new Column(UUID.randomUUID().toString(), "A Fazer", 0, boardId);
 
         columnRepository.save(col2);
         columnRepository.save(col1);
 
-        List<Column> columns = columnRepository.findByBoardId(boardId);
+        Page<Column> columns = columnRepository.findByBoardId(boardId, PageRequest.of(0, 10));
 
-        assertThat(columns).hasSize(2);
-        assertThat(columns.get(0).name()).isEqualTo("A Fazer");
-        assertThat(columns.get(1).name()).isEqualTo("Fazendo");
+        assertThat(columns.getTotalElements()).isEqualTo(2);
     }
 
     @Test

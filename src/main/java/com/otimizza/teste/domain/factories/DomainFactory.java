@@ -1,5 +1,8 @@
 package com.otimizza.teste.domain.factories;
 
+import com.otimizza.teste.application.dtos.BoardRequest;
+import com.otimizza.teste.application.dtos.ColumnRequest;
+import com.otimizza.teste.application.dtos.TaskRequest;
 import com.otimizza.teste.domain.entities.Board;
 import com.otimizza.teste.domain.entities.Column;
 import com.otimizza.teste.domain.entities.Task;
@@ -15,22 +18,28 @@ public class DomainFactory {
         return new Board(UUID.randomUUID().toString(), name);
     }
 
+    public static Board createBoard(BoardRequest request) {
+        return createBoard(request.name());
+    }
+
     public static Column createColumn(String name, int position, String boardId) {
         return new Column(UUID.randomUUID().toString(), name, position, boardId);
     }
 
-    public static Task createTask(String name, int position, String columnId,
-                                  OffsetDateTime createdAt, OffsetDateTime dueDate,
-                                  boolean completed, List<String> tags) {
+    public static Column createColumn(ColumnRequest request) {
+        return createColumn(request.name(), request.position(), request.boardId());
+    }
+
+    public static Task createTask(TaskRequest taskRequest) {
         return Task.builder()
                 .id(UUID.randomUUID().toString())
-                .name(name)
-                .position(position)
-                .columnId(columnId)
-                .createdAt(createdAt != null ? createdAt : OffsetDateTime.now(ZoneOffset.UTC))
-                .dueDate(dueDate)
-                .completed(completed)
-                .tags(tags != null ? tags : List.of())
+                .name(taskRequest.name())
+                .position(taskRequest.position())
+                .columnId(taskRequest.columnId())
+                .createdAt(taskRequest.createdAt() != null ? taskRequest.createdAt() : OffsetDateTime.now(ZoneOffset.UTC))
+                .dueDate(taskRequest.dueDate())
+                .completed(taskRequest.completed())
+                .tags(taskRequest.tags() != null ? taskRequest.tags() : List.of())
                 .build();
     }
 }

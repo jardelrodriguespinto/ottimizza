@@ -1,5 +1,6 @@
 package com.otimizza.teste.application.usecases;
 
+import com.otimizza.teste.application.dtos.TaskRequest;
 import com.otimizza.teste.application.events.TaskCreatedEvent;
 import com.otimizza.teste.domain.entities.Column;
 import com.otimizza.teste.domain.entities.Task;
@@ -13,6 +14,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,27 +43,31 @@ class TaskUseCaseTest {
     private TaskUseCase taskUseCase;
 
     @Test
-    @DisplayName("Should list tasks by column ID")
+    @DisplayName("Should list tasks by column ID with pagination")
     void shouldListTasksByColumn() {
         String columnId = UUID.randomUUID().toString();
         Task task = Task.builder().name("Task 1").columnId(columnId).build();
-        when(repository.findByColumnId(columnId)).thenReturn(List.of(task));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Task> page = new PageImpl<>(List.of(task), pageable, 1);
+        
+        when(repository.findByColumnId(columnId, pageable)).thenReturn(page);
 
-        List<Task> tasks = taskUseCase.listByColumn(columnId);
+        Page<Task> result = taskUseCase.listByColumn(columnId, pageable);
 
-        assertFalse(tasks.isEmpty());
-        assertEquals(1, tasks.size());
-        verify(repository).findByColumnId(columnId);
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.getTotalElements());
+        verify(repository).findByColumnId(columnId, pageable);
     }
 
     @Test
     @DisplayName("Should create a task and publish event")
     void shouldCreateTaskAndPublishEvent() {
         String columnId = UUID.randomUUID().toString();
+        TaskRequest request = new TaskRequest("Task 1", 0, null, null, false, null, columnId);
         when(columnRepository.findById(columnId)).thenReturn(Optional.of(new Column(columnId, "Column", 0, "Board")));
         when(repository.save(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Task created = taskUseCase.create("Task 1", 0, columnId, null, null, false, null);
+        Task created = taskUseCase.create(request);
 
         assertNotNull(created);
         assertEquals("Task 1", created.name());
@@ -70,10 +79,11 @@ class TaskUseCaseTest {
     @DisplayName("Should throw EntityNotFoundException when column not found on create")
     void shouldThrowWhenColumnNotFoundOnCreate() {
         String columnId = UUID.randomUUID().toString();
+        TaskRequest request = new TaskRequest("Task", 0, null, null, false, null, columnId);
         when(columnRepository.findById(columnId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class,
-                () -> taskUseCase.create("Task", 0, columnId, null, null, false, null));
+                () -> taskUseCase.create(request));
     }
 
     @Test
@@ -82,11 +92,13 @@ class TaskUseCaseTest {
         String taskId = UUID.randomUUID().toString();
         String columnId = UUID.randomUUID().toString();
         Task existing = Task.builder().id(taskId).name("Old").position(0).columnId(columnId).build();
+        TaskRequest request = new TaskRequest("New", 1, null, null, true, List.of("tag"), columnId);
+        
         when(columnRepository.findById(columnId)).thenReturn(Optional.of(new Column(columnId, "Column", 0, "Board")));
         when(repository.findById(taskId)).thenReturn(Optional.of(existing));
         when(repository.save(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Task updated = taskUseCase.update(taskId, "New", 1, columnId, null, true, List.of("tag"));
+        Task updated = taskUseCase.update(taskId, request);
 
         assertEquals("New", updated.name());
         assertTrue(updated.completed());
@@ -98,11 +110,12 @@ class TaskUseCaseTest {
     void shouldThrowWhenTaskNotFoundOnUpdate() {
         String taskId = UUID.randomUUID().toString();
         String columnId = UUID.randomUUID().toString();
+        TaskRequest request = new TaskRequest("Name", 0, null, null, false, null, columnId);
         when(columnRepository.findById(columnId)).thenReturn(Optional.of(new Column(columnId, "Column", 0, "Board")));
         when(repository.findById(taskId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class,
-                () -> taskUseCase.update(taskId, "Name", 0, columnId, null, false, null));
+                () -> taskUseCase.update(taskId, request));
     }
 
     @Test
@@ -110,10 +123,11 @@ class TaskUseCaseTest {
     void shouldThrowWhenColumnNotFoundOnUpdate() {
         String taskId = UUID.randomUUID().toString();
         String columnId = UUID.randomUUID().toString();
+        TaskRequest request = new TaskRequest("Name", 0, null, null, false, null, columnId);
         when(columnRepository.findById(columnId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class,
-                () -> taskUseCase.update(taskId, "Name", 0, columnId, null, false, null));
+                () -> taskUseCase.update(taskId, request));
     }
 
     @Test

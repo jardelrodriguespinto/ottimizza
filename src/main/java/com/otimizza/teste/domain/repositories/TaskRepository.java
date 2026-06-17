@@ -1,11 +1,13 @@
 package com.otimizza.teste.domain.repositories;
 
 import com.otimizza.teste.domain.entities.Task;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
 
 public interface TaskRepository {
-    List<Task> findByColumnId(String columnId);
+    Page<Task> findByColumnId(String columnId, Pageable pageable);
     Optional<Task> findById(String id);
     Task save(Task task);
     void deleteById(String id);

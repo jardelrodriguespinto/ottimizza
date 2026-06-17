@@ -1,16 +1,21 @@
 package com.otimizza.teste.interfaces;
 
+import com.otimizza.teste.application.dtos.BoardRequest;
 import com.otimizza.teste.application.usecases.BoardUseCase;
 import com.otimizza.teste.domain.entities.Board;
 import com.otimizza.teste.domain.exceptions.EntityNotFoundException;
 import com.otimizza.teste.infrastructure.security.JwtUtil;
 import com.otimizza.teste.infrastructure.security.SecurityConfig;
+import com.otimizza.teste.interfaces.mappers.BoardMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -18,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -25,7 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BoardController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, BoardMapper.class})
 @ActiveProfiles("test")
 class BoardControllerTest {
 
@@ -47,20 +53,21 @@ class BoardControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("GET /api/v1/board autenticado retorna 200 com lista de boards")
+    @DisplayName("GET /api/v1/board autenticado retorna 200 com lista de boards paginada")
     void listBoardsAutenticadoRetorna200() throws Exception {
-        when(boardUseCase.listAll()).thenReturn(List.of(new Board("uuid-1", "Meu Board")));
+        when(boardUseCase.listAll(any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(new Board("uuid-1", "Meu Board")), PageRequest.of(0, 10), 1));
 
         mockMvc.perform(get("/api/v1/board"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("Meu Board"));
+                .andExpect(jsonPath("$.content[0].name").value("Meu Board"));
     }
 
     @Test
     @WithMockUser
     @DisplayName("POST /api/v1/board com nome válido retorna board criado")
     void createBoardComNomeValidoRetornaBoard() throws Exception {
-        when(boardUseCase.create("Sprint Board")).thenReturn(new Board("uuid-1", "Sprint Board"));
+        when(boardUseCase.create(any(BoardRequest.class))).thenReturn(new Board("uuid-1", "Sprint Board"));
 
         mockMvc.perform(post("/api/v1/board")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -3,10 +3,11 @@ package com.otimizza.teste.infrastructure.persistence;
 import com.otimizza.teste.domain.entities.Board;
 import com.otimizza.teste.domain.repositories.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,10 +19,8 @@ public class JpaBoardRepositoryImpl implements BoardRepository {
     private final SpringDataBoardRepository repository;
 
     @Override
-    public List<Board> findAll() {
-        return repository.findAll().stream()
-                .map(this::toDomain)
-                .toList();
+    public Page<Board> findAll(Pageable pageable) {
+        return repository.findAll(pageable).map(this::toDomain);
     }
 
     @Override

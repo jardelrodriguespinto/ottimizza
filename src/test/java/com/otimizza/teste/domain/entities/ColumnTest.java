@@ -31,10 +31,10 @@ class ColumnTest {
     }
 
     @Test
-    @DisplayName("Should throw when id is null")
-    void shouldThrowWhenIdIsNull() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new Column(null, "A Fazer", 0, UUID.randomUUID().toString()));
+    @DisplayName("Should generate id when null")
+    void shouldGenerateIdWhenNull() {
+        Column column = new Column(null, "A Fazer", 0, UUID.randomUUID().toString());
+        assertNotNull(column.id());
     }
 
     @Test

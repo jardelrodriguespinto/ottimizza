@@ -4,12 +4,14 @@ import com.otimizza.teste.application.dtos.ColumnDTO;
 import com.otimizza.teste.application.dtos.ColumnRequest;
 import com.otimizza.teste.application.usecases.ColumnUseCase;
 import com.otimizza.teste.domain.entities.Column;
+import com.otimizza.teste.interfaces.mappers.ColumnMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,25 +19,25 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ColumnController {
     private final ColumnUseCase columnUseCase;
+    private final ColumnMapper mapper;
 
     @GetMapping("/from/{boardId}")
-    public ResponseEntity<List<ColumnDTO>> listByBoard(@PathVariable String boardId) {
-        List<ColumnDTO> columns = columnUseCase.listByBoard(boardId).stream()
-                .map(c -> new ColumnDTO(c.id(), c.name(), c.position(), c.boardId()))
-                .toList();
+    public ResponseEntity<Page<ColumnDTO>> listByBoard(@PathVariable String boardId, Pageable pageable) {
+        Page<ColumnDTO> columns = columnUseCase.listByBoard(boardId, pageable)
+                .map(mapper::toDTO);
         return ResponseEntity.ok(columns);
     }
 
     @PostMapping
     public ResponseEntity<ColumnDTO> create(@Valid @RequestBody ColumnRequest request) {
-        Column column = columnUseCase.create(request.name(), request.position(), request.boardId());
-        return ResponseEntity.ok(new ColumnDTO(column.id(), column.name(), column.position(), column.boardId()));
+        Column column = columnUseCase.create(request);
+        return ResponseEntity.ok(mapper.toDTO(column));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ColumnDTO> update(@PathVariable String id, @Valid @RequestBody ColumnRequest request) {
-        Column column = columnUseCase.update(id, request.name(), request.position(), request.boardId());
-        return ResponseEntity.ok(new ColumnDTO(column.id(), column.name(), column.position(), column.boardId()));
+        Column column = columnUseCase.update(id, request);
+        return ResponseEntity.ok(mapper.toDTO(column));
     }
 
     @DeleteMapping("/{id}")

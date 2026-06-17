@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 interface SpringDataBoardRepository extends JpaRepository<BoardEntity, UUID> {}
 
@@ -21,25 +20,27 @@ public class JpaBoardRepositoryImpl implements BoardRepository {
     @Override
     public List<Board> findAll() {
         return repository.findAll().stream()
-                .map(e -> new Board(e.getId().toString(), e.getName()))
-                .collect(Collectors.toList());
+                .map(this::toDomain)
+                .toList();
     }
 
     @Override
-    public Optional<Board> findById(UUID id) {
-        return repository.findById(id)
-                .map(e -> new Board(e.getId().toString(), e.getName()));
+    public Optional<Board> findById(String id) {
+        return repository.findById(UUID.fromString(id)).map(this::toDomain);
     }
 
     @Override
     public Board save(Board board) {
-        BoardEntity entity = new BoardEntity(java.util.UUID.fromString(board.id()), board.name());
-        repository.save(entity);
+        repository.save(new BoardEntity(UUID.fromString(board.id()), board.name()));
         return board;
     }
 
     @Override
-    public void deleteById(UUID id) {
-        repository.deleteById(id);
+    public void deleteById(String id) {
+        repository.deleteById(UUID.fromString(id));
+    }
+
+    private Board toDomain(BoardEntity e) {
+        return new Board(e.getId().toString(), e.getName());
     }
 }

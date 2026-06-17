@@ -2,6 +2,7 @@ package com.otimizza.teste.application.usecases;
 
 import com.otimizza.teste.application.events.TaskCreatedEvent;
 import com.otimizza.teste.domain.entities.Task;
+import com.otimizza.teste.domain.exceptions.EntityNotFoundException;
 import com.otimizza.teste.domain.repositories.TaskRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,8 +13,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,33 +35,63 @@ class TaskUseCaseTest {
     @Test
     @DisplayName("Should list tasks by column ID")
     void shouldListTasksByColumn() {
-        String columnId = java.util.UUID.randomUUID().toString();
+        String columnId = UUID.randomUUID().toString();
         Task task = Task.builder().name("Task 1").columnId(columnId).build();
-        when(repository.findByColumnId(java.util.UUID.fromString(columnId))).thenReturn(List.of(task));
+        when(repository.findByColumnId(columnId)).thenReturn(List.of(task));
 
         List<Task> tasks = taskUseCase.listByColumn(columnId);
 
         assertFalse(tasks.isEmpty());
         assertEquals(1, tasks.size());
-        verify(repository, times(1)).findByColumnId(java.util.UUID.fromString(columnId));
+        verify(repository).findByColumnId(columnId);
     }
 
     @Test
     @DisplayName("Should create a task and publish event")
     void shouldCreateTaskAndPublishEvent() {
-        String columnId = java.util.UUID.randomUUID().toString();
-        String name = "Task 1";
-        int position = 1;
+        String columnId = UUID.randomUUID().toString();
+        when(repository.save(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        // DomainFactory.createTask uses Builder, so we need to be careful
-        // Mocking the repository to return the task passed to it
-        when(repository.save(any(Task.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        Task created = taskUseCase.create("Task 1", 0, columnId, null, null, false, null);
 
-        Task createdTask = taskUseCase.create(name, position, columnId);
+        assertNotNull(created);
+        assertEquals("Task 1", created.name());
+        verify(repository).save(any(Task.class));
+        verify(eventPublisher).publishEvent(any(TaskCreatedEvent.class));
+    }
 
-        assertNotNull(createdTask);
-        assertEquals(name, createdTask.name());
-        verify(repository, times(1)).save(any(Task.class));
-        verify(eventPublisher, times(1)).publishEvent(any(TaskCreatedEvent.class));
+    @Test
+    @DisplayName("Should update a task")
+    void shouldUpdateTask() {
+        String taskId = UUID.randomUUID().toString();
+        String columnId = UUID.randomUUID().toString();
+        Task existing = Task.builder().id(taskId).name("Old").position(0).columnId(columnId).build();
+        when(repository.findById(taskId)).thenReturn(Optional.of(existing));
+        when(repository.save(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Task updated = taskUseCase.update(taskId, "New", 1, columnId, null, true, List.of("tag"));
+
+        assertEquals("New", updated.name());
+        assertTrue(updated.completed());
+        verify(repository).save(any(Task.class));
+    }
+
+    @Test
+    @DisplayName("Should throw EntityNotFoundException when task not found on update")
+    void shouldThrowWhenTaskNotFoundOnUpdate() {
+        String taskId = UUID.randomUUID().toString();
+        when(repository.findById(taskId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class,
+                () -> taskUseCase.update(taskId, "Name", 0, UUID.randomUUID().toString(), null, false, null));
+    }
+
+    @Test
+    @DisplayName("Should throw EntityNotFoundException when task not found on delete")
+    void shouldThrowWhenTaskNotFoundOnDelete() {
+        String taskId = UUID.randomUUID().toString();
+        when(repository.findById(taskId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> taskUseCase.delete(taskId));
     }
 }

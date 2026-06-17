@@ -3,15 +3,14 @@ package com.otimizza.teste.interfaces;
 import com.otimizza.teste.application.dtos.BoardDTO;
 import com.otimizza.teste.application.usecases.BoardUseCase;
 import com.otimizza.teste.domain.entities.Board;
-import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/board")
@@ -22,21 +21,21 @@ public class BoardController {
     @GetMapping
     public ResponseEntity<List<BoardDTO>> listAll() {
         List<BoardDTO> boards = boardUseCase.listAll().stream()
-                .map(b -> new BoardDTO(b.id().toString(), b.name()))
-                .collect(Collectors.toList());
+                .map(b -> new BoardDTO(b.id(), b.name()))
+                .toList();
         return ResponseEntity.ok(boards);
     }
 
     @PostMapping
-    public ResponseEntity<BoardDTO> create(@Valid @RequestBody CreateBoardRequest request) {
+    public ResponseEntity<BoardDTO> create(@Valid @RequestBody BoardRequest request) {
         Board board = boardUseCase.create(request.name());
-        return ResponseEntity.ok(new BoardDTO(board.id().toString(), board.name()));
+        return ResponseEntity.ok(new BoardDTO(board.id(), board.name()));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BoardDTO> update(@PathVariable String id, @Valid @RequestBody CreateBoardRequest request) {
+    public ResponseEntity<BoardDTO> update(@PathVariable String id, @Valid @RequestBody BoardRequest request) {
         Board board = boardUseCase.update(id, request.name());
-        return ResponseEntity.ok(new BoardDTO(board.id().toString(), board.name()));
+        return ResponseEntity.ok(new BoardDTO(board.id(), board.name()));
     }
 
     @DeleteMapping("/{id}")
@@ -45,5 +44,5 @@ public class BoardController {
         return ResponseEntity.ok(Map.of("status", "ok"));
     }
 
-    public record CreateBoardRequest(@NotBlank(message = "Name cannot be blank") String name) {}
+    public record BoardRequest(@NotBlank(message = "Name cannot be blank") String name) {}
 }

@@ -9,10 +9,10 @@ jobs:
   build-and-deploy:
     runs-on: self-hosted
     environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'homolog' }}
+      name: ${{ github.ref == 'refs/heads/main' && 'production'}}
 
     env:
-      COMPOSE_PROJECT_NAME: ${{ github.ref == 'refs/heads/main' && 'kanban-prod' || 'kanban-homolog' }}
+      COMPOSE_PROJECT_NAME: ${{ github.ref == 'refs/heads/main' && 'kanban-prod'}}
 
     steps:
       - name: Checkout code
@@ -36,11 +36,30 @@ jobs:
           # 4. Gerar .env
           echo "⚙️ Gerando arquivo .env..."
           cat > .env << EOF
-          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+          DB_PORT=${{ secrets.DB_PORT }}
+
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          SECURITY_USERNAME=${{ secrets.SECURITY_USERNAME }}
+          SECURITY_PASSWORD=${{ secrets.SECURITY_PASSWORD }}
+
+          GRAFANA_USER=${{ secrets.GRAFANA_USER }}
+          GRAFANA_PASSWORD=${{ secrets.GRAFANA_PASSWORD }}
+
+          APP1_PORT=${{ secrets.APP1_PORT }}
+          APP2_PORT=${{ secrets.APP2_PORT }}
+          REDIS_PORT=${{ secrets.REDIS_PORT }}
+          RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}
+          RABBITMQ_MANAGEMENT_PORT=${{ secrets.RABBITMQ_MANAGEMENT_PORT }}
+
+          LOKI_URL=${{ secrets.LOKI_URL }}
+          LOKI_PORT=${{ secrets.LOKI_PORT }}
+          GRAFANA_PORT=${{ secrets.GRAFANA_PORT }}
+          NGINX_PORT=${{ secrets.NGINX_PORT }}
           EOF
+
 
           # 5. Build e Up
           echo "🐳 Iniciando Docker Compose ($COMPOSE_PROJECT_NAME)..."

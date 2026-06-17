@@ -1,0 +1,17 @@
+info:
+  name: delete board by id
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: http://76.13.171.2:8007/api/v1/board/a3c06609-78fb-475a-ae1b-c3232a04df20
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc4MTcxMzExNSwiZXhwIjoxNzgxNzk5NTE1fQ.Z9ws6a2gjv1hKTCk3J7XuFneK1muxG3VOdn5JhYOxbc
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,17 @@
+info:
+  name: delete column
+  type: http
+  seq: 9
+
+http:
+  method: DELETE
+  url: http://76.13.171.2:8007/api/v1/column/51c2303c-0ba9-4ed0-abda-c64019f56524
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc4MTcwNzk0MiwiZXhwIjoxNzgxNzk0MzQyfQ.azvt0RKBqyty2xlOpUvR80x_6sD8sX46QeH_nEqBeps
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

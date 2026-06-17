@@ -1,0 +1,17 @@
+info:
+  name: get task by column id
+  type: http
+  seq: 10
+
+http:
+  method: GET
+  url: http://76.13.171.2:8007/api/v1/task/from/56202567-a016-434c-8472-8608aa11a3af
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc4MTcxODE5MiwiZXhwIjoxNzgxODA0NTkyfQ.CvY3pVB7MgPg9wWXO1OcNYA_XZmM4RaOZBP9XE0jBGo
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

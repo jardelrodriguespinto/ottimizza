@@ -1,0 +1,29 @@
+info:
+  name: update task by id
+  type: http
+  seq: 12
+
+http:
+  method: PUT
+  url: http://76.13.171.2:8007/api/v1/task/d171c45d-b736-447a-9e87-ba9530a2f3ba
+  body:
+    type: json
+    data: |2-
+       {
+         "name": "Nova Tarefa Ottimizza",
+         "position": 1,
+         "createdAt": "2026-06-17T10:00:00Z",
+         "dueDate": "2026-06-20T18:00:00Z",
+         "completed": false,
+         "tags": ["urgente", "feature"],
+         "columnId": "1ab9e700-4e6b-4d3c-bc04-87437b852b37"
+       }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc4MTcwODgwOCwiZXhwIjoxNzgxNzk1MjA4fQ.sJoPbchx-em4pFrIObv-F733dh2DfCTQzvt5X4V8Y40
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,25 @@
+info:
+  name: update column
+  type: http
+  seq: 8
+
+http:
+  method: PUT
+  url: http://76.13.171.2:8007/api/v1/column/51c2303c-0ba9-4ed0-abda-c64019f56524
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Coluna Ottimizza novo",
+        "position": 2,
+        "boardId": "deb8239b-4ec5-47ac-8bb7-c05cb5cbe919"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc4MTcwNzgxMywiZXhwIjoxNzgxNzk0MjEzfQ.0kauOv7--KDRem7QfJ0ofDoWHomJq0dwRFZmWQRvK2A
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

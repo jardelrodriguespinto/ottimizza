@@ -1,0 +1,23 @@
+info:
+  name: update board by id
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: http://76.13.171.2:8007/api/v1/board/2505f760-b64d-4669-97f6-cda73f19806c
+  body:
+    type: json
+    data: |-
+      {
+          "name": "teste ottimizza novo teste"
+        }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc4MTcxMzgzMiwiZXhwIjoxNzgxODAwMjMyfQ.HG7171pw5HfR8q82V6L93rqq5HT5RaVWraL2N2Q1lvk
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

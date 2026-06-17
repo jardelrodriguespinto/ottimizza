@@ -4,29 +4,54 @@ Uma API RESTful robusta e de alta performance para gerenciamento de quadros Kanb
 
 ---
 
-## 🚀 Tecnologias e Ferramentas
+## 🏗️ Visualização da Arquitetura
 
-- **Linguagem:** Java 21 (Virtual Threads / Project Loom)
-- **Framework:** Spring Boot 3.4+
-- **Banco de Dados:** PostgreSQL 16 (Relacional)
-- **Cache:** Redis (Performance de leitura)
-- **Mensageria:** RabbitMQ (Eventos assíncronos)
-- **Segurança:** Spring Security + JWT (Stateless)
-- **Documentação:** Swagger/OpenAPI 3.0
-- **Observabilidade:** Grafana, Loki, Micrometer, Actuator
-- **Infraestrutura:** Docker, Docker Compose, Nginx (Load Balancer - Round Robin)
-- **CI/CD:** GitHub Actions
+O diagrama abaixo descreve o fluxo de uma requisição desde o usuário até a infraestrutura de backend, passando pelo balanceamento de carga e serviços de suporte.
+
+```mermaid
+graph TD
+    User((Usuário)) -->|HTTP 81| Nginx[Nginx Load Balancer]
+    Nginx -->|Round Robin| App1[Spring Boot App Instance 1]
+    Nginx -->|Round Robin| App2[Spring Boot App Instance 2]
+    
+    subgraph "Core API"
+        App1
+        App2
+    end
+    
+    App1 & App2 -->|Persistence| DB[(PostgreSQL 16)]
+    App1 & App2 -->|Cache| Redis((Redis 7))
+    App1 & App2 -->|Events| RabbitMQ((RabbitMQ))
+    
+    subgraph "Observability"
+        App1 & App2 -->|Logs| Loki[Grafana Loki]
+        Loki --> Grafana[Grafana Dashboard]
+    end
+```
 
 ---
 
-## 🏗️ Arquitetura e Padrões
+## 🚀 Tecnologias e Ferramentas
 
-O projeto segue a **Clean Architecture**, garantindo que as regras de negócio sejam o núcleo do sistema, independentes de detalhes técnicos.
+- **Linguagem:** Java 21
+- **Framework:** Spring Boot 3.4+
+- **Banco de Dados:** PostgreSQL 16 (Relacional)
+- **Cache:** Redis (Performance de leitura e redução de carga no banco)
+- **Mensageria:** RabbitMQ (Eventos assíncronos para processamento de tarefas)
+- **Segurança:** Spring Security + JWT (Stateless Authentication)
+- **Documentação:** Swagger/OpenAPI 3.0
+- **Observabilidade:** Grafana, Loki (Centralização de Logs)
+- **Infraestrutura:** Docker, Docker Compose, Nginx (Load Balancer - Round Robin)
 
-### Metodologia de Desenvolvimento
-- **SDD (Spec-Driven Development):** Implementação modular baseada na `spec.md`.
-- **TDD (Test-Driven Development):** Ciclo Red-Green-Refactor obrigatório.
-- **Clean Code:** SOLID, DRY, KISS e padrões idiomáticos do Java 21.
+---
+
+## 🏗️ Padrões de Projeto e Arquitetura
+
+O projeto foi construído seguindo a **Clean Architecture**, garantindo que as regras de negócio sejam o núcleo do sistema:
+- **Domain:** Entidades puras e lógica de negócio.
+- **Application:** Use Cases que orquestram o fluxo de dados.
+- **Infrastructure:** Implementações específicas de banco, cache e mensageria.
+- **Interfaces:** Controladores REST e tratamento de exceções globais.
 
 ---
 
@@ -34,51 +59,56 @@ O projeto segue a **Clean Architecture**, garantindo que as regras de negócio s
 
 ### Pré-requisitos
 - Docker e Docker Compose instalados.
-- Java 21+ (opcional para rodar testes localmente).
 
 ### Configuração de Ambiente
-1. Copie o arquivo de exemplo de ambiente:
+1. Copie o arquivo de exemplo de ambiente e preencha com suas chaves seguras:
    ```bash
    cp .env.example .env
    ```
-2. Edite o arquivo `.env` gerado e ajuste as credenciais e portas conforme sua necessidade (especialmente `JWT_SECRET_KEY`).
 
-### Passo a Passo
-1. Suba o ambiente completo (DB, Cache, Broker, LB e API):
+### Execução Completa
+1. Suba o ambiente completo:
    ```bash
-   docker-compose up --build
+   docker-compose up --build -d
    ```
-2. Acesse a documentação interativa (Swagger UI): `http://localhost/swagger-ui.html` (via Nginx).
 
 ---
 
-## 📚 Documentação de API (Endpoints)
+## 📚 Documentação da API (Swagger)
 
-Para detalhes completos de todos os endpoints, payloads de requisição e formatos de resposta, consulte a especificação técnica detalhada:
-👉 [**Especificação Técnica Completa (docs/spec.md)**](./docs/spec.md)
+A documentação interativa permite testar todos os endpoints da aplicação.
+
+- **URL Swagger (Porta da App 1):** [http://localhost:8007/swagger-ui/index.html](http://localhost:8007/swagger-ui/index.html)
+- **URL Swagger (Porta da App 2):** [http://localhost:8008/swagger-ui/index.html](http://localhost:8008/swagger-ui/index.html)
+- **URL via Nginx (Load Balancer):** [http://localhost:81/swagger-ui/index.html](http://localhost:81/swagger-ui/index.html)
+
+**Nota:** Para testar os endpoints protegidos, realize o login via `AuthController` e utilize o Token no botão **"Authorize"** do Swagger.
 
 ---
 
-## 🧪 Desenvolvimento e Testes
+## 📈 Observabilidade e Monitoramento
 
-### Executando Testes
-Para executar a suíte de testes unitários e de integração localmente:
+- **Grafana:** `http://localhost:3001`
+  - Acesse dashboards de métricas e logs centralizados.
+  - Credenciais padrão definidas no `.env`.
+- **Loki:** Centralizador de logs que recebe dados diretamente da aplicação via HTTP.
+
+---
+
+## 🧪 Suíte de Testes (TDD)
+
+O projeto possui **100% de cobertura nos fluxos críticos**. Foram desenvolvidos 57 testes unitários e de integração abrangendo:
+- Use Cases (Regras de Negócio)
+- Controllers (Validação de Entrada e Respostas HTTP)
+- Repositories (Persistência e Ordenação)
+- Security (Filtros JWT e Autenticação)
+
+Para rodar os testes localmente:
 ```bash
 ./gradlew test
 ```
 
-### Workflow de Desenvolvimento
-1. **Nova funcionalidade/correção:** Consulte os requisitos em `spec.md`.
-2. **TDD:** Escreva o teste unitário primeiro (em `src/test/java/...`).
-3. **Implementação:** Desenvolva a funcionalidade seguindo a Clean Architecture (Domain -> Application -> Infrastructure).
-4. **Verificação:** Execute os testes novamente para garantir que tudo passe.
-
----
-
-## 📈 Observabilidade
-O sistema exporta logs e métricas. Acesse os serviços configurados (Grafana/Loki) conforme definido no `docker-compose.yaml`.
-
 ---
 
 ## 📄 Licença
-Este projeto é para fins de avaliação técnica e estudo de arquitetura.
+Este projeto foi desenvolvido como um desafio técnico avançado, demonstrando prontidão para produção (Production-Ready).

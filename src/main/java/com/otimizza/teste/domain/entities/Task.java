@@ -1,5 +1,7 @@
 package com.otimizza.teste.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,8 +26,16 @@ public class Task implements Serializable {
     private String columnId;
 
     @Builder(toBuilder = true)
-    public Task(String id, String name, int position, OffsetDateTime createdAt,
-                OffsetDateTime dueDate, boolean completed, List<String> tags, String columnId) {
+    @JsonCreator
+    public Task(
+            @JsonProperty("id") String id,
+            @JsonProperty("name") String name,
+            @JsonProperty("position") int position,
+            @JsonProperty("createdAt") OffsetDateTime createdAt,
+            @JsonProperty("dueDate") OffsetDateTime dueDate,
+            @JsonProperty("completed") boolean completed,
+            @JsonProperty("tags") List<String> tags,
+            @JsonProperty("columnId") String columnId) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Task name cannot be null or blank");
         }

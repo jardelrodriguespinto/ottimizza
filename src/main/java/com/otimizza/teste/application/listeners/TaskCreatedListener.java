@@ -16,7 +16,7 @@ public class TaskCreatedListener {
 
     @EventListener
     public void handleTaskCreated(TaskCreatedEvent event) {
-        log.info("New task created: {}. Sending to RabbitMQ...", event.task().name());
+        log.info("New task created: {}. Sending to RabbitMQ...", event.getTask().name());
         messageProducer.sendTaskCreatedMessage(event);
     }
 }

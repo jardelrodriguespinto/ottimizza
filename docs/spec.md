@@ -114,7 +114,7 @@ Este documento segue rigorosamente as metodologias **Spec-Driven Development (SD
 ---
 
 ## 🌐 Sessão 8: Infraestrutura (Docker + Nginx)
-*Responsabilidade: Nginx Round Robin Load Balancer (porta 80 -> 8009).*
+*Responsabilidade: Nginx atuando como Balanceador de Carga (Load Balancer) no modo Round Robin para distribuir requisições entre as instâncias da API (app1, app2).*
 
 ---
 

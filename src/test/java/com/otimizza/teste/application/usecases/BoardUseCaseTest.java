@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -27,7 +26,7 @@ class BoardUseCaseTest {
     @Test
     @DisplayName("Should list all boards")
     void shouldListAllBoards() {
-        Board board = new Board(UUID.randomUUID(), "Board 1");
+        Board board = new Board(java.util.UUID.randomUUID().toString(), "Board 1");
         when(repository.findAll()).thenReturn(List.of(board));
 
         List<Board> boards = boardUseCase.listAll();
@@ -41,7 +40,7 @@ class BoardUseCaseTest {
     @DisplayName("Should create a board")
     void shouldCreateBoard() {
         String name = "New Board";
-        Board board = new Board(UUID.randomUUID(), name);
+        Board board = new Board(java.util.UUID.randomUUID().toString(), name);
         when(repository.save(any(Board.class))).thenReturn(board);
 
         Board createdBoard = boardUseCase.create(name);

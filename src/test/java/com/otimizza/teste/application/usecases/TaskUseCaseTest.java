@@ -12,7 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -32,21 +31,21 @@ class TaskUseCaseTest {
     @Test
     @DisplayName("Should list tasks by column ID")
     void shouldListTasksByColumn() {
-        UUID columnId = UUID.randomUUID();
+        String columnId = java.util.UUID.randomUUID().toString();
         Task task = Task.builder().name("Task 1").columnId(columnId).build();
-        when(repository.findByColumnId(columnId)).thenReturn(List.of(task));
+        when(repository.findByColumnId(java.util.UUID.fromString(columnId))).thenReturn(List.of(task));
 
         List<Task> tasks = taskUseCase.listByColumn(columnId);
 
         assertFalse(tasks.isEmpty());
         assertEquals(1, tasks.size());
-        verify(repository, times(1)).findByColumnId(columnId);
+        verify(repository, times(1)).findByColumnId(java.util.UUID.fromString(columnId));
     }
 
     @Test
     @DisplayName("Should create a task and publish event")
     void shouldCreateTaskAndPublishEvent() {
-        UUID columnId = UUID.randomUUID();
+        String columnId = java.util.UUID.randomUUID().toString();
         String name = "Task 1";
         int position = 1;
 

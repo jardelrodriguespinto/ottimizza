@@ -4,26 +4,40 @@ services:
     ports:
       - "8007:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5433/teste
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/teste
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
       - REDIS_HOST=redis
       - SPRING_RABBITMQ_HOST=rabbitmq
+      - LOKI_URL=http://loki:3100
+      - APP_JWT_SECRET=${JWT_SECRET:-KanbanApiJWTSecretKeyForHmacSHA256DefaultDevKey}
+      - APP_SECURITY_USERNAME=${SECURITY_USERNAME:-admin}
+      - APP_SECURITY_PASSWORD=${SECURITY_PASSWORD:-admin123}
     depends_on:
       - db
       - redis
       - rabbitmq
-      
+      - loki
+
   app2:
     build: .
     ports:
       - "8008:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5433/teste
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/teste
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
       - REDIS_HOST=redis
       - SPRING_RABBITMQ_HOST=rabbitmq
+      - LOKI_URL=http://loki:3100
+      - APP_JWT_SECRET=${JWT_SECRET:-KanbanApiJWTSecretKeyForHmacSHA256DefaultDevKey}
+      - APP_SECURITY_USERNAME=${SECURITY_USERNAME:-admin}
+      - APP_SECURITY_PASSWORD=${SECURITY_PASSWORD:-admin123}
     depends_on:
       - db
       - redis
       - rabbitmq
+      - loki
 
   db:
     image: postgres:16
@@ -44,6 +58,24 @@ services:
     ports:
       - "127.0.0.1:5672:5672"
       - "127.0.0.1:15672:15672"
+
+  loki:
+    image: grafana/loki:3.0.0
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+
+  grafana:
+    image: grafana/grafana:11.0.0
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - loki
 
   nginx:
     image: nginx:alpine

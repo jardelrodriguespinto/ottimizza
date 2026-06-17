@@ -8,21 +8,21 @@ import java.util.UUID;
 
 @Builder(toBuilder = true)
 public record Task(
-        UUID id,
+        String id,
         String name,
         int position,
         OffsetDateTime createdAt,
         OffsetDateTime dueDate,
         boolean completed,
         List<String> tags,
-        UUID columnId
+        String columnId
 ) {
     public Task {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Task name cannot be null or blank");
         }
         if (id == null) {
-            id = UUID.randomUUID();
+            id = UUID.randomUUID().toString();
         }
         if (createdAt == null) {
             createdAt = OffsetDateTime.now(java.time.ZoneOffset.UTC);

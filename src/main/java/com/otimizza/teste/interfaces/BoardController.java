@@ -1,16 +1,16 @@
 package com.otimizza.teste.interfaces;
 
+import com.otimizza.teste.application.dtos.BoardDTO;
 import com.otimizza.teste.application.usecases.BoardUseCase;
 import com.otimizza.teste.domain.entities.Board;
-import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/board")
@@ -19,25 +19,30 @@ public class BoardController {
     private final BoardUseCase boardUseCase;
 
     @GetMapping
-    public ResponseEntity<List<Board>> listAll() {
-        return ResponseEntity.ok(boardUseCase.listAll());
+    public ResponseEntity<List<BoardDTO>> listAll() {
+        List<BoardDTO> boards = boardUseCase.listAll().stream()
+                .map(b -> new BoardDTO(b.id(), b.name()))
+                .toList();
+        return ResponseEntity.ok(boards);
     }
 
     @PostMapping
-    public ResponseEntity<Board> create(@Valid @RequestBody CreateBoardRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(boardUseCase.create(request.name()));
+    public ResponseEntity<BoardDTO> create(@Valid @RequestBody BoardRequest request) {
+        Board board = boardUseCase.create(request.name());
+        return ResponseEntity.ok(new BoardDTO(board.id(), board.name()));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Board> update(@PathVariable UUID id, @Valid @RequestBody CreateBoardRequest request) {
-        return ResponseEntity.ok(boardUseCase.update(id, request.name()));
+    public ResponseEntity<BoardDTO> update(@PathVariable String id, @Valid @RequestBody BoardRequest request) {
+        Board board = boardUseCase.update(id, request.name());
+        return ResponseEntity.ok(new BoardDTO(board.id(), board.name()));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    public ResponseEntity<Map<String, String>> delete(@PathVariable String id) {
         boardUseCase.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(Map.of("status", "ok"));
     }
 
-    public record CreateBoardRequest(@NotBlank(message = "Name cannot be blank") String name) {}
+    public record BoardRequest(@NotBlank(message = "Name cannot be blank") String name) {}
 }

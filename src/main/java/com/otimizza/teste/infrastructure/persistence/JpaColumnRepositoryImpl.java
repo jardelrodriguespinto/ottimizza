@@ -9,10 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 interface SpringDataColumnRepository extends JpaRepository<ColumnEntity, UUID> {
-    List<ColumnEntity> findByBoardId(UUID boardId);
+    List<ColumnEntity> findByBoardIdOrderByPosition(UUID boardId);
 }
 
 @Repository
@@ -21,27 +20,33 @@ public class JpaColumnRepositoryImpl implements ColumnRepository {
     private final SpringDataColumnRepository repository;
 
     @Override
-    public List<Column> findByBoardId(UUID boardId) {
-        return repository.findByBoardId(boardId).stream()
-                .map(e -> new Column(e.getId(), e.getName(), e.getPosition(), e.getBoardId()))
-                .collect(Collectors.toList());
+    public List<Column> findByBoardId(String boardId) {
+        return repository.findByBoardIdOrderByPosition(UUID.fromString(boardId)).stream()
+                .map(this::toDomain)
+                .toList();
     }
 
     @Override
-    public Optional<Column> findById(UUID id) {
-        return repository.findById(id)
-                .map(e -> new Column(e.getId(), e.getName(), e.getPosition(), e.getBoardId()));
+    public Optional<Column> findById(String id) {
+        return repository.findById(UUID.fromString(id)).map(this::toDomain);
     }
 
     @Override
     public Column save(Column column) {
-        ColumnEntity entity = new ColumnEntity(column.id(), column.name(), column.position(), column.boardId());
-        repository.save(entity);
+        repository.save(new ColumnEntity(
+                UUID.fromString(column.id()),
+                column.name(),
+                column.position(),
+                UUID.fromString(column.boardId())));
         return column;
     }
 
     @Override
-    public void deleteById(UUID id) {
-        repository.deleteById(id);
+    public void deleteById(String id) {
+        repository.deleteById(UUID.fromString(id));
+    }
+
+    private Column toDomain(ColumnEntity e) {
+        return new Column(e.getId().toString(), e.getName(), e.getPosition(), e.getBoardId().toString());
     }
 }

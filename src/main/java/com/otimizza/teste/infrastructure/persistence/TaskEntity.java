@@ -1,5 +1,7 @@
 package com.otimizza.teste.infrastructure.persistence;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -9,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -22,9 +25,13 @@ public class TaskEntity {
     private UUID id;
     private String name;
     private int position;
+    @Column(name = "created_at")
     private OffsetDateTime createdAt;
+    @Column(name = "due_date")
     private OffsetDateTime dueDate;
     private boolean completed;
-    private String tags; // Stored as comma-separated or JSON
+    @Convert(converter = TagsConverter.class)
+    private List<String> tags;
+    @Column(name = "column_id")
     private UUID columnId;
 }

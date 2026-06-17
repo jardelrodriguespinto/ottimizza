@@ -9,9 +9,9 @@ import com.otimizza.teste.domain.repositories.ColumnRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,9 +19,9 @@ public class ColumnUseCase {
     private final ColumnRepository repository;
     private final BoardRepository boardRepository;
 
-    @Cacheable(value = "columns", key = "{#boardId, #pageable.pageNumber, #pageable.pageSize}")
-    public Page<Column> listByBoard(String boardId, Pageable pageable) {
-        return repository.findByBoardId(boardId, pageable);
+    @Cacheable(value = "columns", key = "#boardId")
+    public List<Column> listByBoard(String boardId) {
+        return repository.findByBoardId(boardId);
     }
 
     @CacheEvict(value = "columns", allEntries = true)

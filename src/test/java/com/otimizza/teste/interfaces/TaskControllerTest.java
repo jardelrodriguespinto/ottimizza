@@ -46,14 +46,14 @@ class TaskControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("GET /api/v1/task/from/{columnId} retorna lista de tarefas paginada")
+    @DisplayName("GET /api/v1/task/from/{columnId} retorna lista de tarefas")
     void listByColumnRetorna200() throws Exception {
-        when(taskUseCase.listByColumn(anyString(), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of(new Task("task-1", "Tarefa 1", 0, OffsetDateTime.now(), null, false, List.of(), "col-1")), PageRequest.of(0, 10), 1));
+        when(taskUseCase.listByColumn(anyString()))
+                .thenReturn(List.of(new Task("task-1", "Tarefa 1", 0, OffsetDateTime.now(), null, false, List.of(), "col-1")));
 
         mockMvc.perform(get("/api/v1/task/from/col-1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].name").value("Tarefa 1"));
+                .andExpect(jsonPath("$[0].name").value("Tarefa 1"));
     }
 
     @Test

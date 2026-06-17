@@ -38,20 +38,19 @@ class ColumnUseCaseTest {
     private ColumnUseCase columnUseCase;
 
     @Test
-    @DisplayName("Should list columns by board ID with pagination")
+    @DisplayName("Should list columns by board ID")
     void shouldListColumnsByBoard() {
         String boardId = UUID.randomUUID().toString();
         Column column = new Column(UUID.randomUUID().toString(), "To Do", 0, boardId);
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Column> page = new PageImpl<>(List.of(column), pageable, 1);
+        List<Column> list = List.of(column);
         
-        when(repository.findByBoardId(boardId, pageable)).thenReturn(page);
+        when(repository.findByBoardId(boardId)).thenReturn(list);
 
-        Page<Column> result = columnUseCase.listByBoard(boardId, pageable);
+        List<Column> result = columnUseCase.listByBoard(boardId);
 
         assertFalse(result.isEmpty());
-        assertEquals(1, result.getTotalElements());
-        verify(repository).findByBoardId(boardId, pageable);
+        assertEquals(1, result.size());
+        verify(repository).findByBoardId(boardId);
     }
 
     @Test

@@ -11,9 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +22,9 @@ public class TaskUseCase {
     private final ColumnRepository columnRepository;
     private final ApplicationEventPublisher eventPublisher;
 
-    @Cacheable(value = "tasks", key = "{#columnId, #pageable.pageNumber, #pageable.pageSize}")
-    public Page<Task> listByColumn(String columnId, Pageable pageable) {
-        return repository.findByColumnId(columnId, pageable);
+    @Cacheable(value = "tasks", key = "#columnId")
+    public List<Task> listByColumn(String columnId) {
+        return repository.findByColumnId(columnId);
     }
 
     @CacheEvict(value = "tasks", allEntries = true)

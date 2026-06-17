@@ -43,20 +43,19 @@ class TaskUseCaseTest {
     private TaskUseCase taskUseCase;
 
     @Test
-    @DisplayName("Should list tasks by column ID with pagination")
+    @DisplayName("Should list tasks by column ID")
     void shouldListTasksByColumn() {
         String columnId = UUID.randomUUID().toString();
         Task task = Task.builder().name("Task 1").columnId(columnId).build();
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Task> page = new PageImpl<>(List.of(task), pageable, 1);
+        List<Task> list = List.of(task);
         
-        when(repository.findByColumnId(columnId, pageable)).thenReturn(page);
+        when(repository.findByColumnId(columnId)).thenReturn(list);
 
-        Page<Task> result = taskUseCase.listByColumn(columnId, pageable);
+        List<Task> result = taskUseCase.listByColumn(columnId);
 
         assertFalse(result.isEmpty());
-        assertEquals(1, result.getTotalElements());
-        verify(repository).findByColumnId(columnId, pageable);
+        assertEquals(1, result.size());
+        verify(repository).findByColumnId(columnId);
     }
 
     @Test

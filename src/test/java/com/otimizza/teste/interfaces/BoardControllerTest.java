@@ -13,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -53,14 +50,14 @@ class BoardControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("GET /api/v1/board autenticado retorna 200 com lista de boards paginada")
+    @DisplayName("GET /api/v1/board autenticado retorna 200 com lista de boards")
     void listBoardsAutenticadoRetorna200() throws Exception {
-        when(boardUseCase.listAll(any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of(new Board("uuid-1", "Meu Board")), PageRequest.of(0, 10), 1));
+        when(boardUseCase.listAll())
+                .thenReturn(List.of(new Board("uuid-1", "Meu Board")));
 
         mockMvc.perform(get("/api/v1/board"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].name").value("Meu Board"));
+                .andExpect(jsonPath("$[0].name").value("Meu Board"));
     }
 
     @Test

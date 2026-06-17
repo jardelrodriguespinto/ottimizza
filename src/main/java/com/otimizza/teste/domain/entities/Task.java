@@ -1,39 +1,54 @@
 package com.otimizza.teste.domain.entities;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@Getter
+@NoArgsConstructor
 @Builder(toBuilder = true)
-public record Task(
-        String id,
-        String name,
-        int position,
-        OffsetDateTime createdAt,
-        OffsetDateTime dueDate,
-        boolean completed,
-        List<String> tags,
-        String columnId
-) {
-    public Task {
+public class Task implements Serializable {
+    private String id;
+    private String name;
+    private int position;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime dueDate;
+    private boolean completed;
+    private List<String> tags;
+    private String columnId;
+
+    public String id() { return id; }
+    public String name() { return name; }
+    public int position() { return position; }
+    public OffsetDateTime createdAt() { return createdAt; }
+    public OffsetDateTime dueDate() { return dueDate; }
+    public boolean completed() { return completed; }
+    public List<String> tags() { return tags; }
+    public String columnId() { return columnId; }
+
+
+
+    public Task(String id, String name, int position, OffsetDateTime createdAt,
+                OffsetDateTime dueDate, boolean completed, List<String> tags, String columnId) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Task name cannot be null or blank");
         }
-        if (id == null) {
-            id = UUID.randomUUID().toString();
-        }
-        if (createdAt == null) {
-            createdAt = OffsetDateTime.now(java.time.ZoneOffset.UTC);
-        }
+        this.id = (id == null) ? UUID.randomUUID().toString() : id;
+        this.name = name;
+        this.position = position;
+        this.createdAt = (createdAt == null) ? OffsetDateTime.now(java.time.ZoneOffset.UTC) : createdAt;
+        this.dueDate = dueDate;
+        this.completed = completed;
+        this.tags = (tags == null) ? List.of() : List.copyOf(tags);
         if (columnId == null) {
             throw new IllegalArgumentException("Column id cannot be null");
         }
-        if (tags == null) {
-            tags = List.of();
-        } else {
-            tags = List.copyOf(tags);
-        }
+        this.columnId = columnId;
     }
 }

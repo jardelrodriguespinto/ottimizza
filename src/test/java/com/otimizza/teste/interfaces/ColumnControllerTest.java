@@ -1,16 +1,21 @@
 package com.otimizza.teste.interfaces;
 
+import com.otimizza.teste.application.dtos.ColumnRequest;
 import com.otimizza.teste.application.usecases.ColumnUseCase;
 import com.otimizza.teste.domain.entities.Column;
 import com.otimizza.teste.domain.exceptions.EntityNotFoundException;
 import com.otimizza.teste.infrastructure.security.JwtUtil;
 import com.otimizza.teste.infrastructure.security.SecurityConfig;
+import com.otimizza.teste.interfaces.mappers.ColumnMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -18,15 +23,14 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ColumnController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, ColumnMapper.class})
 @ActiveProfiles("test")
 class ColumnControllerTest {
 
@@ -41,22 +45,22 @@ class ColumnControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("GET /api/v1/column/from/{boardId} retorna lista de colunas")
+    @DisplayName("GET /api/v1/column/from/{boardId} retorna lista de colunas paginada")
     void listByBoardRetorna200() throws Exception {
-        when(columnUseCase.listByBoard("board-1"))
-                .thenReturn(List.of(new Column("col-1", "A Fazer", 0, "board-1")));
+        when(columnUseCase.listByBoard(anyString(), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(new Column("col-1", "A Fazer", 0, "board-1")), PageRequest.of(0, 10), 1));
 
         mockMvc.perform(get("/api/v1/column/from/board-1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("A Fazer"))
-                .andExpect(jsonPath("$[0].position").value(0));
+                .andExpect(jsonPath("$.content[0].name").value("A Fazer"))
+                .andExpect(jsonPath("$.content[0].position").value(0));
     }
 
     @Test
     @WithMockUser
     @DisplayName("POST /api/v1/column cria nova coluna")
     void createColumnRetorna200() throws Exception {
-        when(columnUseCase.create(anyString(), anyInt(), anyString()))
+        when(columnUseCase.create(any(ColumnRequest.class)))
                 .thenReturn(new Column("col-1", "A Fazer", 0, "board-1"));
 
         mockMvc.perform(post("/api/v1/column")
@@ -81,7 +85,7 @@ class ColumnControllerTest {
     @WithMockUser
     @DisplayName("PUT /api/v1/column/{id} atualiza coluna")
     void updateColumnRetorna200() throws Exception {
-        when(columnUseCase.update(anyString(), anyString(), anyInt(), anyString()))
+        when(columnUseCase.update(anyString(), any(ColumnRequest.class)))
                 .thenReturn(new Column("col-1", "A Fazer Atualizado", 1, "board-1"));
 
         mockMvc.perform(put("/api/v1/column/col-1")

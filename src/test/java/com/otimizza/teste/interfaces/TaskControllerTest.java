@@ -1,16 +1,21 @@
 package com.otimizza.teste.interfaces;
 
+import com.otimizza.teste.application.dtos.TaskRequest;
 import com.otimizza.teste.application.usecases.TaskUseCase;
 import com.otimizza.teste.domain.entities.Task;
 import com.otimizza.teste.domain.exceptions.EntityNotFoundException;
 import com.otimizza.teste.infrastructure.security.JwtUtil;
 import com.otimizza.teste.infrastructure.security.SecurityConfig;
+import com.otimizza.teste.interfaces.mappers.TaskMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -26,7 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(TaskController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, TaskMapper.class})
 @ActiveProfiles("test")
 class TaskControllerTest {
 
@@ -41,14 +46,14 @@ class TaskControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("GET /api/v1/task/from/{columnId} retorna lista de tarefas")
+    @DisplayName("GET /api/v1/task/from/{columnId} retorna lista de tarefas paginada")
     void listByColumnRetorna200() throws Exception {
-        when(taskUseCase.listByColumn("col-1"))
-                .thenReturn(List.of(new Task("task-1", "Tarefa 1", 0, OffsetDateTime.now(), null, false, List.of(), "col-1")));
+        when(taskUseCase.listByColumn(anyString(), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(new Task("task-1", "Tarefa 1", 0, OffsetDateTime.now(), null, false, List.of(), "col-1")), PageRequest.of(0, 10), 1));
 
         mockMvc.perform(get("/api/v1/task/from/col-1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("Tarefa 1"));
+                .andExpect(jsonPath("$.content[0].name").value("Tarefa 1"));
     }
 
     @Test
@@ -56,8 +61,7 @@ class TaskControllerTest {
     @DisplayName("POST /api/v1/task cria nova tarefa")
     void createTaskRetorna200() throws Exception {
         Task task = new Task("task-1", "Tarefa 1", 0, OffsetDateTime.now(), null, false, List.of("tag1"), "col-1");
-        when(taskUseCase.create(anyString(), anyInt(), anyString(), any(), any(), anyBoolean(), anyList()))
-                .thenReturn(task);
+        when(taskUseCase.create(any(TaskRequest.class))).thenReturn(task);
 
         mockMvc.perform(post("/api/v1/task")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -72,8 +76,7 @@ class TaskControllerTest {
     @DisplayName("PUT /api/v1/task/{id} atualiza tarefa")
     void updateTaskRetorna200() throws Exception {
         Task task = new Task("task-1", "Tarefa 1 Atualizada", 0, OffsetDateTime.now(), null, true, List.of(), "col-1");
-        when(taskUseCase.update(anyString(), anyString(), anyInt(), anyString(), any(), anyBoolean(), any()))
-                .thenReturn(task);
+        when(taskUseCase.update(anyString(), any(TaskRequest.class))).thenReturn(task);
 
         mockMvc.perform(put("/api/v1/task/task-1")
                         .contentType(MediaType.APPLICATION_JSON)

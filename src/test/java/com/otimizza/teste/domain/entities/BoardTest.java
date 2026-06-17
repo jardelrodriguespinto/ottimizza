@@ -18,4 +18,18 @@ class BoardTest {
         assertEquals(id, board.id());
         assertEquals(name, board.name());
     }
+
+    @Test
+    @DisplayName("Should throw when name is blank")
+    void shouldThrowWhenNameIsBlank() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new Board(java.util.UUID.randomUUID().toString(), ""));
+    }
+
+    @Test
+    @DisplayName("Should generate id when null")
+    void shouldGenerateIdWhenNull() {
+        Board board = new Board(null, "Projeto Kanban");
+        assertNotNull(board.id());
+    }
 }

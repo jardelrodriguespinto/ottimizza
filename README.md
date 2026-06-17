@@ -78,9 +78,12 @@ O projeto foi construído seguindo a **Clean Architecture**, garantindo que as r
 
 A documentação interativa permite testar todos os endpoints da aplicação.
 
+- **URL Swagger (Produção):** [http://76.13.171.2:8007/swagger-ui/index.html](http://76.13.171.2:8007/swagger-ui/index.html)
 - **URL Swagger (Porta da App 1):** [http://localhost:8007/swagger-ui/index.html](http://localhost:8007/swagger-ui/index.html)
 - **URL Swagger (Porta da App 2):** [http://localhost:8008/swagger-ui/index.html](http://localhost:8008/swagger-ui/index.html)
 - **URL via Nginx (Load Balancer):** [http://localhost:81/swagger-ui/index.html](http://localhost:81/swagger-ui/index.html)
+
+**Nota:** Você também pode baixar as coleções de requisições prontas para testes na pasta `/collection` na raiz do repositório.
 
 **Nota:** Para testar os endpoints protegidos, realize o login via `AuthController` e utilize o Token no botão **"Authorize"** do Swagger.
 

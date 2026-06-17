@@ -1,0 +1,29 @@
+info:
+  name: create task
+  type: http
+  seq: 11
+
+http:
+  method: POST
+  url: http://76.13.171.2:8007/api/v1/task
+  body:
+    type: json
+    data: |2-
+       {
+         "name": "Nova Tarefa",
+         "position": 1,
+         "createdAt": "2026-06-17T10:00:00Z",
+         "dueDate": "2026-06-20T18:00:00Z",
+         "completed": false,
+         "tags": ["urgente", "feature"],
+         "columnId": "56202567-a016-434c-8472-8608aa11a3af"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc4MTcwODEyNiwiZXhwIjoxNzgxNzk0NTI2fQ.YEYZqMaYVScDRQpUK_XMvzDao_r8e9dmiudPjoAGe_U
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

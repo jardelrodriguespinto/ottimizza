@@ -1,0 +1,17 @@
+info:
+  name: delete task
+  type: http
+  seq: 13
+
+http:
+  method: DELETE
+  url: http://76.13.171.2:8007/api/v1/task/6d1f0c48-e176-4707-9e52-e3dcd252ae90
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc4MTcwODU3MywiZXhwIjoxNzgxNzk0OTczfQ.sgWSj8fur5jnssj3eIzu2cFpHVGMNlqKwipdARf9IzU
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,25 @@
+info:
+  name: create column
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: http://76.13.171.2:8007/api/v1/column
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Coluna ottimizza",
+        "position": 1,
+        "boardId": "deb8239b-4ec5-47ac-8bb7-c05cb5cbe919"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc4MTcwNzcyMSwiZXhwIjoxNzgxNzk0MTIxfQ.5aj4-JocsXBvShSeMfNq8irVRPo_KyurExVmlb7iEFo
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

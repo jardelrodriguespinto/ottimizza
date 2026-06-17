@@ -74,6 +74,12 @@ O projeto foi construído seguindo a **Clean Architecture**, garantindo que as r
 
 ---
 
+## 📂 Coleções da API
+
+Você pode encontrar arquivos de coleções (YAML) para importar em ferramentas de requisição HTTP (como Insomnia, Postman ou extensões de IDE) na pasta `/collection` na raiz do repositório. Esses arquivos facilitam o teste e a exploração dos endpoints da API.
+
+---
+
 ## 📚 Documentação da API (Swagger)
 
 A documentação interativa permite testar todos os endpoints da aplicação.

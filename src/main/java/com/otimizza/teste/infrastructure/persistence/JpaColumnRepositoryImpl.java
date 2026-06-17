@@ -23,19 +23,19 @@ public class JpaColumnRepositoryImpl implements ColumnRepository {
     @Override
     public List<Column> findByBoardId(UUID boardId) {
         return repository.findByBoardId(boardId).stream()
-                .map(e -> new Column(e.getId(), e.getName(), e.getPosition(), e.getBoardId()))
+                .map(e -> new Column(e.getId().toString(), e.getName(), e.getPosition(), e.getBoardId().toString()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public Optional<Column> findById(UUID id) {
         return repository.findById(id)
-                .map(e -> new Column(e.getId(), e.getName(), e.getPosition(), e.getBoardId()));
+                .map(e -> new Column(e.getId().toString(), e.getName(), e.getPosition(), e.getBoardId().toString()));
     }
 
     @Override
     public Column save(Column column) {
-        ColumnEntity entity = new ColumnEntity(column.id(), column.name(), column.position(), column.boardId());
+        ColumnEntity entity = new ColumnEntity(java.util.UUID.fromString(column.id()), column.name(), column.position(), java.util.UUID.fromString(column.boardId()));
         repository.save(entity);
         return column;
     }

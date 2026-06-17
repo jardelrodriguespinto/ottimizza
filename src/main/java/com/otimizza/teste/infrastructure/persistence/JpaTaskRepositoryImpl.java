@@ -35,9 +35,9 @@ public class JpaTaskRepositoryImpl implements TaskRepository {
 
     @Override
     public Task save(Task task) {
-        TaskEntity entity = new TaskEntity(task.id(), task.name(), task.position(), 
+        TaskEntity entity = new TaskEntity(java.util.UUID.fromString(task.id()), task.name(), task.position(), 
                                            task.createdAt(), task.dueDate(), task.completed(), 
-                                           String.join(",", task.tags()), task.columnId());
+                                           String.join(",", task.tags()), java.util.UUID.fromString(task.columnId()));
         repository.save(entity);
         return task;
     }
@@ -48,8 +48,8 @@ public class JpaTaskRepositoryImpl implements TaskRepository {
     }
 
     private Task toDomain(TaskEntity e) {
-        return new Task(e.getId(), e.getName(), e.getPosition(), e.getCreatedAt(), 
+        return new Task(e.getId().toString(), e.getName(), e.getPosition(), e.getCreatedAt(), 
                         e.getDueDate(), e.isCompleted(), 
-                        e.getTags() != null && !e.getTags().isEmpty() ? Arrays.asList(e.getTags().split(",")) : List.of(), e.getColumnId());
+                        e.getTags() != null && !e.getTags().isEmpty() ? Arrays.asList(e.getTags().split(",")) : List.of(), e.getColumnId().toString());
     }
 }

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,16 +20,16 @@ public class TaskUseCase {
     private final ApplicationEventPublisher eventPublisher;
 
     @Cacheable(value = "tasks", key = "#columnId")
-    public List<Task> listByColumn(UUID columnId) {
-        return repository.findByColumnId(columnId);
+    public List<Task> listByColumn(String columnId) {
+        return repository.findByColumnId(java.util.UUID.fromString(columnId));
     }
 
-    public Optional<Task> findById(UUID id) {
-        return repository.findById(id);
+    public Optional<Task> findById(String id) {
+        return repository.findById(java.util.UUID.fromString(id));
     }
 
     @CacheEvict(value = "tasks", key = "#columnId")
-    public Task create(String name, int position, UUID columnId) {
+    public Task create(String name, int position, String columnId) {
         Task task = DomainFactory.createTask(name, position, columnId);
         Task savedTask = repository.save(task);
         eventPublisher.publishEvent(new TaskCreatedEvent(savedTask));
@@ -38,8 +37,8 @@ public class TaskUseCase {
     }
 
     @CacheEvict(value = "tasks", key = "#columnId")
-    public Task update(UUID id, String name, int position, UUID columnId, boolean completed, List<String> tags) {
-        Task existingTask = repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Task not found"));
+    public Task update(String id, String name, int position, String columnId, boolean completed, List<String> tags) {
+        Task existingTask = repository.findById(java.util.UUID.fromString(id)).orElseThrow(() -> new IllegalArgumentException("Task not found"));
         
         Task updatedTask = existingTask.toBuilder()
                 .name(name)
@@ -53,7 +52,7 @@ public class TaskUseCase {
     }
 
     @CacheEvict(value = "tasks", key = "#columnId")
-    public void delete(UUID id, UUID columnId) {
-        repository.deleteById(id);
+    public void delete(String id, String columnId) {
+        repository.deleteById(java.util.UUID.fromString(id));
     }
 }

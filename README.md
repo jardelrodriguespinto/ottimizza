@@ -21,24 +21,12 @@ Uma API RESTful robusta e de alta performance para gerenciamento de quadros Kanb
 
 ## 🏗️ Arquitetura e Padrões
 
-O projeto segue a **Clean Architecture**, garantindo que as regras de negócio sejam o núcleo do sistema, independentes de detalhes técnicos:
-
-1.  **Domain:** Entidades, Objetos de Valor e interfaces de Repositório.
-2.  **Application:** Casos de uso (Services) e DTOs (Records).
-3.  **Infrastructure:** Implementações técnicas (JPA, Redis, Security).
-4.  **Interface/Web:** Controllers REST e Exception Handlers.
+O projeto segue a **Clean Architecture**, garantindo que as regras de negócio sejam o núcleo do sistema, independentes de detalhes técnicos.
 
 ### Metodologia de Desenvolvimento
-- **SDD (Spec-Driven Development):** Implementação modular baseada em sessões.
+- **SDD (Spec-Driven Development):** Implementação modular baseada na `spec.md`.
 - **TDD (Test-Driven Development):** Ciclo Red-Green-Refactor obrigatório.
 - **Clean Code:** SOLID, DRY, KISS e padrões idiomáticos do Java 21.
-
----
-
-## 📚 Documentação Detalhada
-
-Para detalhes técnicos sobre camadas, padrões de projeto, segurança e infraestrutura, consulte a especificação mestra:
-👉 [**Especificação Técnica Completa (docs/spec.md)**](./docs/spec.md)
 
 ---
 
@@ -46,50 +34,51 @@ Para detalhes técnicos sobre camadas, padrões de projeto, segurança e infraes
 
 ### Pré-requisitos
 - Docker e Docker Compose instalados.
-- Java 21+ (opcional para rodar via Docker).
+- Java 21+ (opcional para rodar testes localmente).
+
+### Configuração de Ambiente
+1. Copie o arquivo de exemplo de ambiente:
+   ```bash
+   cp .env.example .env
+   ```
+2. Edite o arquivo `.env` gerado e ajuste as credenciais e portas conforme sua necessidade (especialmente `JWT_SECRET_KEY`).
 
 ### Passo a Passo
-1. Clone o repositório.
-2. Suba o ambiente completo (DB, Cache, Broker, LB e API):
+1. Suba o ambiente completo (DB, Cache, Broker, LB e API):
    ```bash
    docker-compose up --build
    ```
-3. Acesse a documentação interativa:
-   - **Swagger UI:** `http://localhost/swagger-ui.html` (via Nginx)
-   - **Health Check:** `http://localhost/actuator/health`
+2. Acesse a documentação interativa (Swagger UI): `http://localhost/swagger-ui.html` (via Nginx).
 
 ---
 
-## ✅ Endpoints Principais
+## 📚 Documentação de API (Endpoints)
 
-| Recurso | Método | Endpoint | Descrição |
-| :--- | :--- | :--- | :--- |
-| **Board** | `GET` | `/api/v1/board` | Listar todos os quadros |
-| **Board** | `POST` | `/api/v1/board` | Criar um novo quadro |
-| **Column** | `GET` | `/api/v1/column/from/{id}` | Listar colunas de um quadro |
-| **Task** | `POST` | `/api/v1/task` | Criar nova tarefa |
-
-*Consulte o Swagger para a lista completa e payloads.*
+Para detalhes completos de todos os endpoints, payloads de requisição e formatos de resposta, consulte a especificação técnica detalhada:
+👉 [**Especificação Técnica Completa (docs/spec.md)**](./docs/spec.md)
 
 ---
 
-## 🧪 Testes
+## 🧪 Desenvolvimento e Testes
 
-Para executar a suíte de testes unitários e de integração:
+### Executando Testes
+Para executar a suíte de testes unitários e de integração localmente:
 ```bash
 ./gradlew test
 ```
 
+### Workflow de Desenvolvimento
+1. **Nova funcionalidade/correção:** Consulte os requisitos em `spec.md`.
+2. **TDD:** Escreva o teste unitário primeiro (em `src/test/java/...`).
+3. **Implementação:** Desenvolva a funcionalidade seguindo a Clean Architecture (Domain -> Application -> Infrastructure).
+4. **Verificação:** Execute os testes novamente para garantir que tudo passe.
+
 ---
 
 ## 📈 Observabilidade
-
-O sistema está configurado para exportar logs estruturados em JSON e métricas para:
-- **Grafana:** Dashboard de monitoramento.
-- **Loki:** Agregação de logs centralizada.
+O sistema exporta logs e métricas. Acesse os serviços configurados (Grafana/Loki) conforme definido no `docker-compose.yaml`.
 
 ---
 
 ## 📄 Licença
-
 Este projeto é para fins de avaliação técnica e estudo de arquitetura.

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -18,28 +17,28 @@ public class ColumnUseCase {
     private final ColumnRepository repository;
 
     @Cacheable(value = "columns", key = "#boardId")
-    public List<Column> listByBoard(UUID boardId) {
-        return repository.findByBoardId(boardId);
+    public List<Column> listByBoard(String boardId) {
+        return repository.findByBoardId(java.util.UUID.fromString(boardId));
     }
 
-    public Optional<Column> findById(UUID id) {
-        return repository.findById(id);
+    public Optional<Column> findById(String id) {
+        return repository.findById(java.util.UUID.fromString(id));
     }
 
     @CacheEvict(value = "columns", key = "#boardId")
-    public Column create(String name, int position, UUID boardId) {
-        Column column = new Column(UUID.randomUUID(), name, position, boardId);
+    public Column create(String name, int position, String boardId) {
+        Column column = new Column(java.util.UUID.randomUUID().toString(), name, position, boardId);
         return repository.save(column);
     }
 
     @CacheEvict(value = "columns", key = "#boardId")
-    public Column update(UUID id, String name, int position, UUID boardId) {
-        repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Column not found"));
+    public Column update(String id, String name, int position, String boardId) {
+        repository.findById(java.util.UUID.fromString(id)).orElseThrow(() -> new IllegalArgumentException("Column not found"));
         return repository.save(new Column(id, name, position, boardId));
     }
 
     @CacheEvict(value = "columns", key = "#boardId")
-    public void delete(UUID id, UUID boardId) {
-        repository.deleteById(id);
+    public void delete(String id, String boardId) {
+        repository.deleteById(java.util.UUID.fromString(id));
     }
 }

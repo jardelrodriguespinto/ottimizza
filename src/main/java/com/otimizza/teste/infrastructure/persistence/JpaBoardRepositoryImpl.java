@@ -21,19 +21,19 @@ public class JpaBoardRepositoryImpl implements BoardRepository {
     @Override
     public List<Board> findAll() {
         return repository.findAll().stream()
-                .map(e -> new Board(e.getId(), e.getName()))
+                .map(e -> new Board(e.getId().toString(), e.getName()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public Optional<Board> findById(UUID id) {
         return repository.findById(id)
-                .map(e -> new Board(e.getId(), e.getName()));
+                .map(e -> new Board(e.getId().toString(), e.getName()));
     }
 
     @Override
     public Board save(Board board) {
-        BoardEntity entity = new BoardEntity(board.id(), board.name());
+        BoardEntity entity = new BoardEntity(java.util.UUID.fromString(board.id()), board.name());
         repository.save(entity);
         return board;
     }

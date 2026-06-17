@@ -1,8 +1,6 @@
 package com.otimizza.teste.domain.entities;
 
-import java.util.UUID;
-
-public record Column(UUID id, String name, int position, UUID boardId) {
+public record Column(String id, String name, int position, String boardId) {
     public Column {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Column name cannot be null or blank");

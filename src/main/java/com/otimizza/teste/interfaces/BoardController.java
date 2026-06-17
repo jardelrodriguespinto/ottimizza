@@ -1,10 +1,10 @@
 package com.otimizza.teste.interfaces;
 
 import com.otimizza.teste.application.dtos.BoardDTO;
+import com.otimizza.teste.application.dtos.BoardRequest;
 import com.otimizza.teste.application.usecases.BoardUseCase;
 import com.otimizza.teste.domain.entities.Board;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +43,4 @@ public class BoardController {
         boardUseCase.delete(id);
         return ResponseEntity.ok(Map.of("status", "ok"));
     }
-
-    public record BoardRequest(@NotBlank(message = "Name cannot be blank") String name) {}
 }

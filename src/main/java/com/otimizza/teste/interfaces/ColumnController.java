@@ -1,11 +1,10 @@
 package com.otimizza.teste.interfaces;
 
 import com.otimizza.teste.application.dtos.ColumnDTO;
+import com.otimizza.teste.application.dtos.ColumnRequest;
 import com.otimizza.teste.application.usecases.ColumnUseCase;
 import com.otimizza.teste.domain.entities.Column;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,9 +43,4 @@ public class ColumnController {
         columnUseCase.delete(id);
         return ResponseEntity.ok(Map.of("status", "ok"));
     }
-
-    public record ColumnRequest(
-            @NotBlank(message = "Name cannot be blank") String name,
-            int position,
-            @NotNull(message = "Board ID cannot be null") String boardId) {}
 }

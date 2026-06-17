@@ -4,6 +4,7 @@ import com.otimizza.teste.application.events.TaskCreatedEvent;
 import com.otimizza.teste.domain.entities.Task;
 import com.otimizza.teste.domain.exceptions.EntityNotFoundException;
 import com.otimizza.teste.domain.factories.DomainFactory;
+import com.otimizza.teste.domain.repositories.ColumnRepository;
 import com.otimizza.teste.domain.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskUseCase {
     private final TaskRepository repository;
+    private final ColumnRepository columnRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Cacheable(value = "tasks", key = "#columnId")
@@ -29,6 +31,8 @@ public class TaskUseCase {
     public Task create(String name, int position, String columnId,
                        OffsetDateTime createdAt, OffsetDateTime dueDate,
                        boolean completed, List<String> tags) {
+        columnRepository.findById(columnId)
+                .orElseThrow(() -> new EntityNotFoundException("Column not found"));
         Task task = DomainFactory.createTask(name, position, columnId, createdAt, dueDate, completed, tags);
         Task saved = repository.save(task);
         eventPublisher.publishEvent(new TaskCreatedEvent(saved));
@@ -38,6 +42,8 @@ public class TaskUseCase {
     @CacheEvict(value = "tasks", allEntries = true)
     public Task update(String id, String name, int position, String columnId,
                        OffsetDateTime dueDate, boolean completed, List<String> tags) {
+        columnRepository.findById(columnId)
+                .orElseThrow(() -> new EntityNotFoundException("Column not found"));
         Task existing = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found"));
         Task updated = existing.toBuilder()

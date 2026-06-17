@@ -1,16 +1,14 @@
 package com.otimizza.teste.interfaces;
 
 import com.otimizza.teste.application.dtos.TaskDTO;
+import com.otimizza.teste.application.dtos.TaskRequest;
 import com.otimizza.teste.application.usecases.TaskUseCase;
 import com.otimizza.teste.domain.entities.Task;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -54,13 +52,4 @@ public class TaskController {
         return new TaskDTO(t.id(), t.name(), t.position(), t.createdAt(),
                 t.dueDate(), t.completed(), t.tags(), t.columnId());
     }
-
-    public record TaskRequest(
-            @NotBlank(message = "Name cannot be blank") String name,
-            int position,
-            OffsetDateTime createdAt,
-            OffsetDateTime dueDate,
-            boolean completed,
-            List<String> tags,
-            @NotNull(message = "Column ID cannot be null") String columnId) {}
 }

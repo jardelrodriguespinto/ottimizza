@@ -30,6 +30,19 @@ public class ColumnController {
                 .body(columnUseCase.create(request.name(), request.position(), request.boardId()));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Column> update(@PathVariable UUID id, @Valid @RequestBody CreateColumnRequest request) {
+        return ResponseEntity.ok(columnUseCase.update(id, request.name(), request.position(), request.boardId()));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        Column column = columnUseCase.listByBoard(columnUseCase.findById(id).orElseThrow().boardId()).stream()
+            .filter(c -> c.id().equals(id)).findFirst().orElseThrow();
+        columnUseCase.delete(id, column.boardId());
+        return ResponseEntity.noContent().build();
+    }
+
     public record CreateColumnRequest(
             @NotBlank(message = "Name cannot be blank") String name,
             int position,

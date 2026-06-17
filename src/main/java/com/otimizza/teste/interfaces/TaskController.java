@@ -30,8 +30,27 @@ public class TaskController {
                 .body(taskUseCase.create(request.name(), request.position(), request.columnId()));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> update(@PathVariable UUID id, @Valid @RequestBody UpdateTaskRequest request) {
+        return ResponseEntity.ok(taskUseCase.update(id, request.name(), request.position(), request.columnId(), request.completed(), request.tags()));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        Task task = taskUseCase.findById(id).orElseThrow();
+        taskUseCase.delete(id, task.columnId());
+        return ResponseEntity.noContent().build();
+    }
+
     public record CreateTaskRequest(
             @NotBlank(message = "Name cannot be blank") String name,
             int position,
             @NotNull(message = "Column ID cannot be null") UUID columnId) {}
+
+    public record UpdateTaskRequest(
+            @NotBlank(message = "Name cannot be blank") String name,
+            int position,
+            @NotNull(message = "Column ID cannot be null") UUID columnId,
+            boolean completed,
+            List<String> tags) {}
 }

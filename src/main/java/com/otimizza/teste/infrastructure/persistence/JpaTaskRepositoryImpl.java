@@ -3,16 +3,16 @@ package com.otimizza.teste.infrastructure.persistence;
 import com.otimizza.teste.domain.entities.Task;
 import com.otimizza.teste.domain.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 interface SpringDataTaskRepository extends JpaRepository<TaskEntity, UUID> {
-    Page<TaskEntity> findByColumnId(UUID columnId, Pageable pageable);
+    List<TaskEntity> findByColumnId(UUID columnId);
 }
 
 @Repository
@@ -21,9 +21,11 @@ public class JpaTaskRepositoryImpl implements TaskRepository {
     private final SpringDataTaskRepository repository;
 
     @Override
-    public Page<Task> findByColumnId(String columnId, Pageable pageable) {
-        return repository.findByColumnId(UUID.fromString(columnId), pageable)
-                .map(this::toDomain);
+    public List<Task> findByColumnId(String columnId) {
+        return repository.findByColumnId(UUID.fromString(columnId))
+                .stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
     }
 
     @Override

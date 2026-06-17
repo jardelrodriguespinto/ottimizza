@@ -7,12 +7,12 @@ import com.otimizza.teste.domain.entities.Task;
 import com.otimizza.teste.interfaces.mappers.TaskMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/task")
@@ -22,9 +22,11 @@ public class TaskController {
     private final TaskMapper mapper;
 
     @GetMapping("/from/{columnId}")
-    public ResponseEntity<Page<TaskDTO>> listByColumn(@PathVariable String columnId, Pageable pageable) {
-        Page<TaskDTO> tasks = taskUseCase.listByColumn(columnId, pageable)
-                .map(mapper::toDTO);
+    public ResponseEntity<List<TaskDTO>> listByColumn(@PathVariable String columnId) {
+        List<TaskDTO> tasks = taskUseCase.listByColumn(columnId)
+                .stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(tasks);
     }
 

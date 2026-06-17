@@ -10,10 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,19 +29,17 @@ class BoardUseCaseTest {
     private BoardUseCase boardUseCase;
 
     @Test
-    @DisplayName("Should list all boards with pagination")
+    @DisplayName("Should list all boards")
     void shouldListAllBoards() {
         Board board = new Board(UUID.randomUUID().toString(), "Board 1");
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Board> page = new PageImpl<>(List.of(board), pageable, 1);
         
-        when(repository.findAll(pageable)).thenReturn(page);
+        when(repository.findAll()).thenReturn(List.of(board));
 
-        Page<Board> result = boardUseCase.listAll(pageable);
+        List<Board> result = boardUseCase.listAll();
 
         assertFalse(result.isEmpty());
-        assertEquals(1, result.getTotalElements());
-        verify(repository).findAll(pageable);
+        assertEquals(1, result.size());
+        verify(repository).findAll();
     }
 
     @Test

@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
@@ -39,14 +37,14 @@ class BoardRepositoryTest {
     }
 
     @Test
-    @DisplayName("Should return all boards paginated")
+    @DisplayName("Should return all boards")
     void shouldReturnAllBoards() {
         boardRepository.save(new Board(UUID.randomUUID().toString(), "Board A"));
         boardRepository.save(new Board(UUID.randomUUID().toString(), "Board B"));
 
-        Page<Board> boards = boardRepository.findAll(PageRequest.of(0, 10));
+        var boards = boardRepository.findAll();
 
-        assertTrue(boards.getTotalElements() >= 2);
+        assertTrue(boards.size() >= 2);
     }
 
     @Test

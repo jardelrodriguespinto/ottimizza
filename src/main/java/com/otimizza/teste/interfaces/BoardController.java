@@ -7,12 +7,12 @@ import com.otimizza.teste.domain.entities.Board;
 import com.otimizza.teste.interfaces.mappers.BoardMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/board")
@@ -22,9 +22,10 @@ public class BoardController {
     private final BoardMapper mapper;
 
     @GetMapping
-    public ResponseEntity<Page<BoardDTO>> listAll(Pageable pageable) {
-        Page<BoardDTO> boards = boardUseCase.listAll(pageable)
-                .map(mapper::toDTO);
+    public ResponseEntity<List<BoardDTO>> listAll() {
+        List<BoardDTO> boards = boardUseCase.listAll().stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(boards);
     }
 

@@ -7,12 +7,12 @@ import com.otimizza.teste.domain.entities.Column;
 import com.otimizza.teste.interfaces.mappers.ColumnMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/column")
@@ -22,9 +22,11 @@ public class ColumnController {
     private final ColumnMapper mapper;
 
     @GetMapping("/from/{boardId}")
-    public ResponseEntity<Page<ColumnDTO>> listByBoard(@PathVariable String boardId, Pageable pageable) {
-        Page<ColumnDTO> columns = columnUseCase.listByBoard(boardId, pageable)
-                .map(mapper::toDTO);
+    public ResponseEntity<List<ColumnDTO>> listByBoard(@PathVariable String boardId) {
+        List<ColumnDTO> columns = columnUseCase.listByBoard(boardId)
+                .stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(columns);
     }
 

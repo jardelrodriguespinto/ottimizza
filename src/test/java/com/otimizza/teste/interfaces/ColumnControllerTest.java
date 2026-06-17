@@ -45,15 +45,15 @@ class ColumnControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("GET /api/v1/column/from/{boardId} retorna lista de colunas paginada")
+    @DisplayName("GET /api/v1/column/from/{boardId} retorna lista de colunas")
     void listByBoardRetorna200() throws Exception {
-        when(columnUseCase.listByBoard(anyString(), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of(new Column("col-1", "A Fazer", 0, "board-1")), PageRequest.of(0, 10), 1));
+        when(columnUseCase.listByBoard(anyString()))
+                .thenReturn(List.of(new Column("col-1", "A Fazer", 0, "board-1")));
 
         mockMvc.perform(get("/api/v1/column/from/board-1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].name").value("A Fazer"))
-                .andExpect(jsonPath("$.content[0].position").value(0));
+                .andExpect(jsonPath("$[0].name").value("A Fazer"))
+                .andExpect(jsonPath("$[0].position").value(0));
     }
 
     @Test

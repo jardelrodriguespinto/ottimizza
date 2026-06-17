@@ -62,7 +62,7 @@ services:
   loki:
     image: grafana/loki:3.0.0
     ports:
-      - "3101:3100"
+      - "3102:3100"
     command: -config.file=/etc/loki/local-config.yaml
 
   grafana:

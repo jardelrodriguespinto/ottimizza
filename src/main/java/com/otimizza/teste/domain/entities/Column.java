@@ -1,26 +1,22 @@
 package com.otimizza.teste.domain.entities;
 
-import java.io.Serializable;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 @Getter
 @NoArgsConstructor
-@Builder
+@Accessors(fluent = true)
 public class Column implements Serializable {
     private String id;
     private String name;
     private int position;
     private String boardId;
 
-
-    public String id() { return id; }
-    public String name() { return name; }
-    public int position() { return position; }
-    public String boardId() { return boardId; }
-
+    @Builder
     public Column(String id, String name, int position, String boardId) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Column name cannot be null or blank");

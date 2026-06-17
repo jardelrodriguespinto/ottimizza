@@ -3,7 +3,7 @@ package com.otimizza.teste.domain.entities;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
-@Builder(toBuilder = true)
+@Accessors(fluent = true)
 public class Task implements Serializable {
     private String id;
     private String name;
@@ -23,17 +23,7 @@ public class Task implements Serializable {
     private List<String> tags;
     private String columnId;
 
-    public String id() { return id; }
-    public String name() { return name; }
-    public int position() { return position; }
-    public OffsetDateTime createdAt() { return createdAt; }
-    public OffsetDateTime dueDate() { return dueDate; }
-    public boolean completed() { return completed; }
-    public List<String> tags() { return tags; }
-    public String columnId() { return columnId; }
-
-
-
+    @Builder(toBuilder = true)
     public Task(String id, String name, int position, OffsetDateTime createdAt,
                 OffsetDateTime dueDate, boolean completed, List<String> tags, String columnId) {
         if (name == null || name.isBlank()) {

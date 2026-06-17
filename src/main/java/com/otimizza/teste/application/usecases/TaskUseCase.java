@@ -35,7 +35,7 @@ public class TaskUseCase {
         return saved;
     }
 
-    @CacheEvict(value = "tasks", key = "#columnId")
+    @CacheEvict(value = "tasks", allEntries = true)
     public Task update(String id, String name, int position, String columnId,
                        OffsetDateTime dueDate, boolean completed, List<String> tags) {
         Task existing = repository.findById(id)

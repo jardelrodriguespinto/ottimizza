@@ -3,6 +3,7 @@ package com.otimizza.teste.interfaces;
 import com.otimizza.teste.application.dtos.AuthRequest;
 import com.otimizza.teste.application.dtos.AuthResponse;
 import com.otimizza.teste.infrastructure.security.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ public class AuthController {
     private final AuthenticationManager authManager;
     private final JwtUtil jwtUtil;
 
+    @Operation(summary = "Autenticar e obter token JWT", security = {})
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
         Authentication auth = authManager.authenticate(
